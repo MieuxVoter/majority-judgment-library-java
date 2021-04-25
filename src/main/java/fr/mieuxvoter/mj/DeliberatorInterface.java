@@ -3,14 +3,19 @@ package fr.mieuxvoter.mj;
 
 /**
  * A Deliberator takes in a poll's Tally,
- * that is the amount of grades received by each Proposal,
- * and outputs the poll's Result,
+ * that is the amount of judgments of each grade received by each Proposal,
+ * and outputs that poll's Result,
  * that is the final rank of each Proposal.
+ * Ranks start at 1 ("best"), and increment towards "worst".
+ * Two proposal may share the same rank, in extreme equality cases.
  * 
  * This is the main API of this library.
  * 
  * See MajorityJudgmentDeliberator for an implementation.
+ * One could implement other deliberators, such as CentralJudgment or UsualJudgment.
  */
 public interface DeliberatorInterface {
+
 	public ResultInterface deliberate(TallyInterface tally);
+
 }

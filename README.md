@@ -25,7 +25,7 @@ TallyInterface tally = new Tally(new ProposalTallyInterface[] {
         new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),  // Proposal A
         new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),  // Proposal B
         // …
-});
+}, 18);
 ResultInterface result = mj.deliberate(tally);
 
 // Each proposal result has a rank, and results are returned by input order
@@ -34,18 +34,19 @@ assert(2 == result.getProposalResults()[0].getRank());  // Proposal A
 assert(1 == result.getProposalResults()[1].getRank());  // Proposal B
 ```
 
-
-## Run the test-suite
-
-`CTRL+F11` in Eclipse.
+Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 
 
 ## Roadmap
 
-- [ ] Unit-Tests
-- [ ] Deliberation algorithm
+- [x] Unit-Tests
+- [x] Deliberation algorithm
+	- [x] Tally Analysis
+	- [x] Score Calculus
+	- [x] Ranking
 - [ ] Release v0.1.0
 - [ ] Allow choosing a default grade
+- [ ] Guess the amount of judges
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
     - [ ] Maven
@@ -60,6 +61,11 @@ assert(1 == result.getProposalResults()[1].getRank());  // Proposal B
 We are not accustomed to Java library development and we'd love reviews from seasoned veterans !
 
 Feel free to fork and request merges for your contributions and active readings !
+
+
+## Run the test-suite
+
+`CTRL+F11` in Eclipse.
 
 
 ## License

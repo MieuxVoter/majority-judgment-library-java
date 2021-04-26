@@ -49,6 +49,7 @@ Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 - [ ] Guess the amount of judges
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
+    - [ ] Gradle
     - [ ] Maven
     - [ ] … ? (please share your knowledge to help us!)
 - [ ] Release v0.3.0
@@ -65,7 +66,13 @@ Feel free to fork and request merges for your contributions and active readings 
 
 ## Run the test-suite
 
-`CTRL+F11` in Eclipse.
+Install [maven](https://maven.apache.org), and run:
+
+    mvn test
+
+> Maven is available as a debian package: `apt install maven`
+
+You can also use a runner in Eclipse.  (`CTRL+F11` to rerun)
 
 
 ## License

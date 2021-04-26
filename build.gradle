@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    // Use the JUnit test framework with assertions and stuff
+    // Use the JUnit test framework with assertions and benchmarks
     testImplementation 'org.junit.jupiter:junit-jupiter:5.6.3'
     testImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
     
@@ -26,6 +26,5 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     //implementation 'com.google.guava:guava:23.0'
-
 }
 

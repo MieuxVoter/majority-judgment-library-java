@@ -4,5 +4,6 @@
 /.gradle
 
 /build
+/target
 
 *.class

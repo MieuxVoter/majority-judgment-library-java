@@ -81,8 +81,8 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 	) {
 		ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
 		int amountOfGrades = tally.getTally().length;
-		int digitsForGrade = ("" + amountOfGrades).length(); 
-		int digitsForGroup = ("" + amountOfJudges).length(); 
+		int digitsForGrade = ("" + amountOfGrades).length();
+		int digitsForGroup = ("" + amountOfJudges).length() + 1;
 		
 		ProposalTallyInterface currentTally = tally.duplicate();
 		

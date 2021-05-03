@@ -1,6 +1,10 @@
 # Majority Judgment Library for Java
 
+[![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-java)](./LICENSE.md)
+![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-library-java/Java%20CI%20with%20Maven)
 Test-driven java library to help deliberate using Majority Judgment.
+![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)
+[![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg)](https://discord.gg/rAAQG9S)
 
 
 ## Example Usage
@@ -44,9 +48,12 @@ Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 	- [x] Tally Analysis
 	- [x] Score Calculus
 	- [x] Ranking
-- [ ] Release v0.1.0
-- [ ] Allow choosing a default grade
+- [x] Release v0.1.0
 - [ ] Guess the amount of judges
+- [ ] Allow defining a default grade
+	- [ ] Static Grade (configurable)
+	- [ ] Median Grade
+	- [ ] Normalization (using smallest common multiple)
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
     - [ ] Gradle

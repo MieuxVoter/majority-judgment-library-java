@@ -2,9 +2,13 @@
 
 [![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-java)](./LICENSE.md)
 ![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-library-java/Java%20CI%20with%20Maven)
-Test-driven java library to help deliberate using Majority Judgment.
 ![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg)](https://discord.gg/rAAQG9S)
+
+Test-driven java library to help deliberate using Majority Judgment.
+
+The goal is to be **scalable**, **reliable**, fast and extensible.
+We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ whatsoever.
 
 
 ## Example Usage

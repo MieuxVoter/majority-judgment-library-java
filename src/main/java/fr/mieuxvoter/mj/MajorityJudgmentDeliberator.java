@@ -100,7 +100,7 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 					analysis.getMedianGrade()
 			);
 
-			if (! onlyNumbers) {
+			if ( ! onlyNumbers) {
 				score += "_";
 			}
 			

@@ -2,8 +2,6 @@ package fr.mieuxvoter.mj;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.stream.Stream;
-
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -11,9 +9,6 @@ import javax.json.JsonValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import net.joshka.junit.json.params.JsonFileSource;
 //import net.joshka.junit.json.params.JsonObject;
 
@@ -55,25 +50,26 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(1, result.getProposalResults()[1].getRank());
 	}
 	
-    @DisplayName("Test majority judgment deliberation")
-    @ParameterizedTest(name="#{index} {0}")
-    @JsonFileSource(resources = "/assertions.json")
-    public void testFromJson(JsonObject datum) {
-    	JsonArray jsonTallies = datum.getJsonArray("tallies");
-    	int amountOfProposals = jsonTallies.size();
-    	ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
-    	for (int i = 0; i < amountOfProposals; i++) {
-    		JsonArray jsonTally = jsonTallies.getJsonArray(i);
-    		int amountOfGrades = jsonTally.size();
-    		Long[] tally = new Long[amountOfGrades];
-    		for (int g = 0; g < amountOfGrades; g++) {
-    			JsonValue amountForGrade = jsonTally.get(g);
-    			tally[g] = Long.valueOf(amountForGrade.toString());
-    		}
-    		tallies[i] = new ProposalTally(tally);
-    	}
+	@DisplayName("Test majority judgment deliberation")
+	@ParameterizedTest(name="#{index} {0}")
+	@JsonFileSource(resources = "/assertions.json")
+	public void testFromJson(JsonObject datum) {
+		JsonArray jsonTallies = datum.getJsonArray("tallies");
+		int amountOfProposals = jsonTallies.size();
+		Long amountOfParticipants = Long.valueOf(datum.get("participants").toString());
+		ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
+		for (int i = 0; i < amountOfProposals; i++) {
+			JsonArray jsonTally = jsonTallies.getJsonArray(i);
+			int amountOfGrades = jsonTally.size();
+			Long[] tally = new Long[amountOfGrades];
+			for (int g = 0; g < amountOfGrades; g++) {
+				JsonValue amountForGrade = jsonTally.get(g);
+				tally[g] = Long.valueOf(amountForGrade.toString());
+			}
+			tallies[i] = new ProposalTally(tally);
+		}
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-		TallyInterface tally = new Tally(tallies, 3L);
+		TallyInterface tally = new Tally(tallies, amountOfParticipants);
 		ResultInterface result = mj.deliberate(tally);
 		
 		assertNotNull(result);
@@ -85,23 +81,23 @@ class MajorityJudgmentDeliberatorTest {
 					"Rank of tally #"+i
 			);
 		}
-    }
+	}
 	
 //	@Test
 //	public void runBenchmarks() throws Exception {
-//	    Options options = new OptionsBuilder()
-//	            .include(this.getClass().getName() + ".*")
-//	            .mode(Mode.AverageTime)
-//	            .warmupTime(TimeValue.seconds(1))
-//	            .warmupIterations(6)
-//	            .threads(1)
-//	            .measurementIterations(6)
-//	            .forks(1)
-//	            .shouldFailOnError(true)
-//	            .shouldDoGC(true)
-//	            .build();
+//		Options options = new OptionsBuilder()
+//				.include(this.getClass().getName() + ".*")
+//				.mode(Mode.AverageTime)
+//				.warmupTime(TimeValue.seconds(1))
+//				.warmupIterations(6)
+//				.threads(1)
+//				.measurementIterations(6)
+//				.forks(1)
+//				.shouldFailOnError(true)
+//				.shouldDoGC(true)
+//				.build();
 //
-//	    new Runner(options).run();
+//		new Runner(options).run();
 //	}
 
 }

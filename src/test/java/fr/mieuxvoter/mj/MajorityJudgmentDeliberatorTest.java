@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import net.joshka.junit.json.params.JsonFileSource;
-//import net.joshka.junit.json.params.JsonObject;
 
 
 class MajorityJudgmentDeliberatorTest {
@@ -29,7 +28,7 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(2, result.getProposalResults()[0].getRank());
 		assertEquals(1, result.getProposalResults()[1].getRank());
 	}
-	 
+
 	@Test
 	public void testUsageWithBigNumbers() {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -49,7 +48,7 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(2, result.getProposalResults()[0].getRank());
 		assertEquals(1, result.getProposalResults()[1].getRank());
 	}
-	
+
 	@DisplayName("Test majority judgment deliberation")
 	@ParameterizedTest(name="#{index} {0}")
 	@JsonFileSource(resources = "/assertions.json")
@@ -82,7 +81,7 @@ class MajorityJudgmentDeliberatorTest {
 			);
 		}
 	}
-	
+
 //	@Test
 //	public void runBenchmarks() throws Exception {
 //		Options options = new OptionsBuilder()

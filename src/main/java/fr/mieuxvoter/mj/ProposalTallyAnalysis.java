@@ -92,7 +92,6 @@ public class ProposalTallyAnalysis {
 					this.medianGrade = grade;
 					this.contestationGroupSize = tallyBeforeCursor;
 					this.medianGroupSize = gradeTally;
-//					this.adhesionGroupSize = this.totalSize - this.contestationGroupSize - this.medianGroupSize;
 					this.adhesionGroupSize = this.totalSize.subtract(this.contestationGroupSize).subtract(this.medianGroupSize);
 				} else {
 					if (1 == gradeTally.compareTo(BigInteger.ZERO)) {  // 0 < gradeTally
@@ -108,7 +107,6 @@ public class ProposalTallyAnalysis {
 		
 		this.contestationGrade = contestationGrade;
 		this.adhesionGrade = adhesionGrade;
-//		this.secondMedianGroupSize = Math.max(this.contestationGroupSize, this.adhesionGroupSize);
 		this.secondMedianGroupSize = this.contestationGroupSize.max(this.adhesionGroupSize);
 		this.secondMedianGroupSign = 0;
 //		if (this.contestationGroupSize < this.adhesionGroupSize) {

@@ -21,6 +21,7 @@ class MajorityJudgmentDeliberatorTest {
 				new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),
 				new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),
 		}, 18L);
+		
 		ResultInterface result = mj.deliberate(tally);
 		
 		assertNotNull(result);
@@ -80,6 +81,22 @@ class MajorityJudgmentDeliberatorTest {
 					"Rank of tally #"+i
 			);
 		}
+	}
+
+	@Test
+	public void testWithStaticDefaultGrade() {
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 0, 0, 1 }),
+				new ProposalTally(new Integer[]{ 0, 3, 0 }),
+		}, 3L, 0);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(2, result.getProposalResults().length);
+		assertEquals(2, result.getProposalResults()[0].getRank());
+		assertEquals(1, result.getProposalResults()[1].getRank());
 	}
 
 //	@Test

@@ -1,5 +1,6 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public class ProposalTally implements ProposalTallyInterface {
@@ -40,6 +41,16 @@ public class ProposalTally implements ProposalTallyInterface {
 	public void moveJudgments(Integer fromGrade, Integer intoGrade) {
 		this.tally[intoGrade] += this.tally[fromGrade]; 
 		this.tally[fromGrade] = 0L; 
+	}
+
+	@Override
+	public BigInteger getAmountOfJudgments() {
+		BigInteger sum = BigInteger.valueOf(0);
+		int tallyLength = this.tally.length;
+		for (int i = 0 ; i < tallyLength ; i++) {
+			sum = sum.add(BigInteger.valueOf(this.tally[i]));
+		}
+		return sum;
 	}
 
 }

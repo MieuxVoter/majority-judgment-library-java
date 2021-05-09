@@ -73,7 +73,7 @@ public class ProposalTallyAnalysis {
 		if ( ! favorContestation) {
 			medianOffset = 2;
 		}
-		BigInteger medianCursor = this.totalSize.add(BigInteger.valueOf(medianOffset)).divide(BigInteger.TWO);
+		BigInteger medianCursor = this.totalSize.add(BigInteger.valueOf(medianOffset)).divide(BigInteger.valueOf(2));
 //		Long medianCursor = (long) Math.floor((this.totalSize + medianOffset) / 2.0);
 		
 		BigInteger tallyBeforeCursor = BigInteger.ZERO;

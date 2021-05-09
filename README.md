@@ -44,6 +44,10 @@ assert(1 == result.getProposalResults()[1].getRank());  // Proposal B
 
 Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 
+Got even more than that ?  Use `BigInteger`s !
+
+Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a `Tally`.
+
 
 ## Roadmap
 
@@ -55,9 +59,9 @@ Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 - [x] Release v0.1.0
 - [ ] Guess the amount of judges
 - [ ] Allow defining a default grade
-	- [ ] Static Grade (configurable)
+	- [x] Static Grade (configurable)
 	- [ ] Median Grade
-	- [ ] Normalization (using smallest common multiple)
+	- [ ] Normalization (using least common multiple)
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
     - [ ] Gradle

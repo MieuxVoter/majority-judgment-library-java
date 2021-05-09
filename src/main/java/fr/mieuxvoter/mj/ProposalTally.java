@@ -9,27 +9,48 @@ public class ProposalTally implements ProposalTallyInterface {
 
 	// Should we allow this as well?
 	//public ProposalTally() {}
+
+	public ProposalTally(String[] tally) {
+		setTally(tally);
+	}
 	
 	public ProposalTally(Integer[] tally) {
-		int tallyLength = tally.length;
-		BigInteger[] bigTally = new BigInteger[tallyLength];
-		for (int i = 0 ; i < tallyLength ; i++) {
-			bigTally[i] = BigInteger.valueOf(tally[i]);
-		}
-		setTally(bigTally);
+		setTally(tally);
 	}
 	
 	public ProposalTally(Long[] tally) {
-		int tallyLength = tally.length;
-		BigInteger[] bigTally = new BigInteger[tallyLength];
-		for (int i = 0 ; i < tallyLength ; i++) {
-			bigTally[i] = BigInteger.valueOf(tally[i]);
-		}
-		setTally(bigTally);
+		setTally(tally);
 	}
 	
 	public ProposalTally(BigInteger[] tally) {
 		setTally(tally);
+	}
+
+	public void setTally(String[] tally) {
+		int tallyLength = tally.length;
+		BigInteger[] bigTally = new BigInteger[tallyLength];
+		for (int i = 0 ; i < tallyLength ; i++) {
+			bigTally[i] = new BigInteger(tally[i]);
+		}
+		setTally(bigTally);
+	}
+
+	public void setTally(Integer[] tally) {
+		int tallyLength = tally.length;
+		BigInteger[] bigTally = new BigInteger[tallyLength];
+		for (int i = 0 ; i < tallyLength ; i++) {
+			bigTally[i] = BigInteger.valueOf(tally[i]);
+		}
+		setTally(bigTally);
+	}
+
+	public void setTally(Long[] tally) {
+		int tallyLength = tally.length;
+		BigInteger[] bigTally = new BigInteger[tallyLength];
+		for (int i = 0 ; i < tallyLength ; i++) {
+			bigTally[i] = BigInteger.valueOf(tally[i]);
+		}
+		setTally(bigTally);
 	}
 	
 	public void setTally(BigInteger[] tally) {
@@ -48,7 +69,6 @@ public class ProposalTally implements ProposalTallyInterface {
 
 	@Override
 	public void moveJudgments(Integer fromGrade, Integer intoGrade) {
-//		this.tally[intoGrade] += this.tally[fromGrade]; 
 		this.tally[intoGrade] = this.tally[intoGrade].add(this.tally[fromGrade]); 
 		this.tally[fromGrade] = BigInteger.ZERO; 
 	}

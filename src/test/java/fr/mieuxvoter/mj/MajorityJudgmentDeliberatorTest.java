@@ -68,8 +68,16 @@ class MajorityJudgmentDeliberatorTest {
 			}
 			tallies[i] = new ProposalTally(tally);
 		}
+		
+		String mode = datum.getString("mode", "None");
+		TallyInterface tally;
+		if ("StaticDefault".equalsIgnoreCase(mode)) {
+			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default"));
+		} else {
+			tally = new Tally(tallies, amountOfParticipants);
+		}
+		
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-		TallyInterface tally = new Tally(tallies, amountOfParticipants);
 		ResultInterface result = mj.deliberate(tally);
 		
 		assertNotNull(result);

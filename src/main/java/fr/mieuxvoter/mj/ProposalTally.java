@@ -1,33 +1,43 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public class ProposalTally implements ProposalTallyInterface {
 
-	protected Long[] tally;
+	protected BigInteger[] tally;
 
 	// Should we allow this as well?
 	//public ProposalTally() {}
 	
 	public ProposalTally(Integer[] tally) {
 		int tallyLength = tally.length;
-		Long[] doublesTally = new Long[tallyLength];
+		BigInteger[] bigTally = new BigInteger[tallyLength];
 		for (int i = 0 ; i < tallyLength ; i++) {
-			doublesTally[i] = Long.valueOf(tally[i]);
+			bigTally[i] = BigInteger.valueOf(tally[i]);
 		}
-		setTally(doublesTally);
+		setTally(bigTally);
 	}
 	
 	public ProposalTally(Long[] tally) {
+		int tallyLength = tally.length;
+		BigInteger[] bigTally = new BigInteger[tallyLength];
+		for (int i = 0 ; i < tallyLength ; i++) {
+			bigTally[i] = BigInteger.valueOf(tally[i]);
+		}
+		setTally(bigTally);
+	}
+	
+	public ProposalTally(BigInteger[] tally) {
 		setTally(tally);
 	}
 	
-	public void setTally(Long[] tally) {
+	public void setTally(BigInteger[] tally) {
 		this.tally = tally;
 	}
 	
 	@Override
-	public Long[] getTally() {
+	public BigInteger[] getTally() {
 		return this.tally;
 	}
 
@@ -38,8 +48,19 @@ public class ProposalTally implements ProposalTallyInterface {
 
 	@Override
 	public void moveJudgments(Integer fromGrade, Integer intoGrade) {
-		this.tally[intoGrade] += this.tally[fromGrade]; 
-		this.tally[fromGrade] = 0L; 
+//		this.tally[intoGrade] += this.tally[fromGrade]; 
+		this.tally[intoGrade] = this.tally[intoGrade].add(this.tally[fromGrade]); 
+		this.tally[fromGrade] = BigInteger.ZERO; 
+	}
+
+	@Override
+	public BigInteger getAmountOfJudgments() {
+		BigInteger sum = BigInteger.ZERO;
+		int tallyLength = this.tally.length;
+		for (int i = 0 ; i < tallyLength ; i++) {
+			sum = sum.add(this.tally[i]);
+		}
+		return sum;
 	}
 
 }

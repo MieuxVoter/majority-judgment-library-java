@@ -1,5 +1,6 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -24,7 +25,7 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
 	public ResultInterface deliberate(TallyInterface tally) {
 		ProposalTallyInterface[] tallies = tally.getProposalsTallies();
-		Long amountOfJudges = tally.getAmountOfJudges();
+		BigInteger amountOfJudges = tally.getAmountOfJudges();
 		Integer amountOfProposals = tally.getAmountOfProposals();
 		
 		Result result = new Result();
@@ -69,13 +70,13 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		return result;
 	}
 	
-	public String computeScore(ProposalTallyInterface tally, Long amountOfJudges) {
+	public String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
 		return computeScore(tally, amountOfJudges, true, false);
 	}
 
 	public String computeScore(
 			ProposalTallyInterface tally,
-			Long amountOfJudges,
+			BigInteger amountOfJudges,
 			Boolean favorContestation,
 			Boolean onlyNumbers
 	) {
@@ -99,15 +100,19 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 					"%0"+digitsForGrade+"d",
 					analysis.getMedianGrade()
 			);
-
-			if (! onlyNumbers) {
+			
+			if ( ! onlyNumbers) {
 				score += "_";
 			}
 			
-			
 			score += String.format(
 					"%0"+digitsForGroup+"d",
-					amountOfJudges + analysis.getSecondMedianGroupSize() * analysis.getSecondMedianGroupSign()
+					// amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
+					amountOfJudges.add(
+							analysis.getSecondMedianGroupSize().multiply(
+									BigInteger.valueOf(analysis.getSecondMedianGroupSign())
+							)
+					)
 			);
 			
 			currentTally.moveJudgments(analysis.getMedianGrade(), analysis.getSecondMedianGrade());

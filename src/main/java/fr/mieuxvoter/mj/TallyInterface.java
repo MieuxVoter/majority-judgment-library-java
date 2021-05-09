@@ -1,11 +1,13 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
+
 public interface TallyInterface {
-	
+
 	public ProposalTallyInterface[] getProposalsTallies();
-	
-	public Long getAmountOfJudges();
-	
+
+	public BigInteger getAmountOfJudges();
+
 	public Integer getAmountOfProposals();
-	
+
 }

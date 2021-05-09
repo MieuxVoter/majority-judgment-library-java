@@ -19,7 +19,8 @@ repositories {
 dependencies {
     // Use the JUnit test framework with assertions and benchmarks
     testImplementation 'org.junit.jupiter:junit-jupiter:5.6.3'
-    testImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
+    testImplementation 'net.joshka:junit-json-params:1.1.0'
+    //testImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
     
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     //api 'org.apache.commons:commons-math3:3.6.1'

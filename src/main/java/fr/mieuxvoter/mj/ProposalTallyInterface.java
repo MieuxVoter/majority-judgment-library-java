@@ -1,11 +1,22 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
+
 public interface ProposalTallyInterface {
 	
 	/**
-	 * The amount of judgments received for each Grade, from "worst" Grade to "best" Grade.
+	 * The tallies of each Grade, that is
+	 * the amount of judgments received for each Grade by the Proposal,
+	 * from "worst" ("most conservative") Grade to "best" Grade.
 	 */
-	public Long[] getTally();
+	public BigInteger[] getTally();
+	
+	/**
+	 * Should be the sum of getTally()
+	 * 
+	 * @return The total amount of judgments received by this proposal.
+	 */
+	public BigInteger getAmountOfJudgments();
 	
 	/**
 	 * Homemade factory to skip the clone() shenanigans.

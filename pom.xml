@@ -6,7 +6,7 @@
 
   <groupId>fr.mieuxvoter.mj</groupId>
   <artifactId>majority-judgment</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 
   <name>majority-judgment</name>
   <url>https://mieuxvoter.fr</url>
@@ -24,7 +24,18 @@
       <version>5.6.3</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>net.joshka</groupId>
+      <artifactId>junit-json-params</artifactId>
+      <version>1.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.1.4</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

@@ -1,19 +1,26 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
+
 public class Tally implements TallyInterface {
 
 	protected ProposalTallyInterface[] proposalsTallies;
 	
-	protected Long amountOfJudges = 0L;
+	protected BigInteger amountOfJudges = BigInteger.ZERO;
+	
+	public Tally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
+		setProposalsTallies(proposalsTallies);
+		setAmountOfJudges(amountOfJudges);
+	}
 
 	public Tally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges) {
 		setProposalsTallies(proposalsTallies);
-		setAmountOfJudges(amountOfJudges);
+		setAmountOfJudges(BigInteger.valueOf(amountOfJudges));
 	}
 	
 	public Tally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
 		setProposalsTallies(proposalsTallies);
-		setAmountOfJudges(Long.valueOf(amountOfJudges));
+		setAmountOfJudges(BigInteger.valueOf(amountOfJudges));
 	}
 
 	public ProposalTallyInterface[] getProposalsTallies() {
@@ -28,11 +35,11 @@ public class Tally implements TallyInterface {
 		return proposalsTallies.length;
 	}
 
-	public Long getAmountOfJudges() {
+	public BigInteger getAmountOfJudges() {
 		return amountOfJudges;
 	}
 
-	public void setAmountOfJudges(Long amountOfJudges) {
+	public void setAmountOfJudges(BigInteger amountOfJudges) {
 		this.amountOfJudges = amountOfJudges;
 	}
 	

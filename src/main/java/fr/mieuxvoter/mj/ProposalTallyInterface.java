@@ -9,7 +9,7 @@ public interface ProposalTallyInterface {
 	 * the amount of judgments received for each Grade by the Proposal,
 	 * from "worst" ("most conservative") Grade to "best" Grade.
 	 */
-	public Long[] getTally();
+	public BigInteger[] getTally();
 	
 	/**
 	 * Should be the sum of getTally()

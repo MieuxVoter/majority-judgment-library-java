@@ -5,9 +5,14 @@ import java.math.BigInteger;
 public class Tally implements TallyInterface {
 
 	protected ProposalTallyInterface[] proposalsTallies;
-	
+
 	protected BigInteger amountOfJudges = BigInteger.ZERO;
-	
+
+	public Tally(ProposalTallyInterface[] proposalsTallies) {
+		setProposalsTallies(proposalsTallies);
+		guessAmountOfJudges();
+	}
+
 	public Tally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
 		setProposalsTallies(proposalsTallies);
 		setAmountOfJudges(amountOfJudges);
@@ -17,7 +22,7 @@ public class Tally implements TallyInterface {
 		setProposalsTallies(proposalsTallies);
 		setAmountOfJudges(BigInteger.valueOf(amountOfJudges));
 	}
-	
+
 	public Tally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
 		setProposalsTallies(proposalsTallies);
 		setAmountOfJudges(BigInteger.valueOf(amountOfJudges));
@@ -42,5 +47,13 @@ public class Tally implements TallyInterface {
 	public void setAmountOfJudges(BigInteger amountOfJudges) {
 		this.amountOfJudges = amountOfJudges;
 	}
-	
+
+	protected void guessAmountOfJudges() {
+		BigInteger amountOfJudges = BigInteger.ZERO;
+		for (ProposalTallyInterface proposalTally : getProposalsTallies()) {
+			amountOfJudges = proposalTally.getAmountOfJudgments().max(amountOfJudges);
+		}
+		setAmountOfJudges(amountOfJudges);
+	}
+
 }

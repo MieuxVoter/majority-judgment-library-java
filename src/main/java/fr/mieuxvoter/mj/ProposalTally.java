@@ -5,25 +5,32 @@ import java.util.Arrays;
 
 public class ProposalTally implements ProposalTallyInterface {
 
+	/**
+	 * Amounts of judgments received per grade, from "worst" grade to "best" grade.
+	 * Those are BigIntegers because of our LCM-based normalization shenanigans.
+	 */
 	protected BigInteger[] tally;
 
-	// Should we allow this as well?
-	//public ProposalTally() {}
+	public ProposalTally() {}
 
 	public ProposalTally(String[] tally) {
 		setTally(tally);
 	}
-	
+
 	public ProposalTally(Integer[] tally) {
 		setTally(tally);
 	}
-	
+
 	public ProposalTally(Long[] tally) {
 		setTally(tally);
 	}
-	
+
 	public ProposalTally(BigInteger[] tally) {
 		setTally(tally);
+	}
+
+	public ProposalTally(ProposalTallyInterface proposalTally) {
+		setTally(Arrays.copyOf(proposalTally.getTally(), proposalTally.getTally().length));
 	}
 
 	public void setTally(String[] tally) {
@@ -52,11 +59,11 @@ public class ProposalTally implements ProposalTallyInterface {
 		}
 		setTally(bigTally);
 	}
-	
+
 	public void setTally(BigInteger[] tally) {
 		this.tally = tally;
 	}
-	
+
 	@Override
 	public BigInteger[] getTally() {
 		return this.tally;

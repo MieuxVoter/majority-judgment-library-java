@@ -2,6 +2,8 @@ package fr.mieuxvoter.mj;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigInteger;
+
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -20,7 +22,7 @@ class MajorityJudgmentDeliberatorTest {
 		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
 				new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),
 				new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),
-		}, 18L);
+		});
 		
 		ResultInterface result = mj.deliberate(tally);
 		
@@ -31,18 +33,17 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
-	public void testUsageWithBigNumbers() {
+	public void testDemoUsageWithBigNumbers() {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
 				new ProposalTally(new Long[]{11312415004L, 21153652410L, 24101523299L, 18758623562L}),
 				new ProposalTally(new Long[]{11312415004L, 21153652400L, 24101523299L, 18758623572L}),
 //				new ProposalTally(new Long[]{14526586452L, 40521123260L, 14745623120L, 40526235129L}),
-		}, 75326214275L);
+		});
 		ResultInterface result = mj.deliberate(tally);
 		
 //		System.out.println("Score 0: "+result.getProposalResults()[0].getScore());
 //		System.out.println("Score 1: "+result.getProposalResults()[1].getScore());
-//		System.out.println("Total "+(11312415004L+21153652410L+24101523299L+18758623562L));
 		
 		assertNotNull(result);
 		assertEquals(2, result.getProposalResults().length);
@@ -56,15 +57,15 @@ class MajorityJudgmentDeliberatorTest {
 	public void testFromJson(JsonObject datum) {
 		JsonArray jsonTallies = datum.getJsonArray("tallies");
 		int amountOfProposals = jsonTallies.size();
-		Long amountOfParticipants = Long.valueOf(datum.get("participants").toString());
+		BigInteger amountOfParticipants = new BigInteger(datum.get("participants").toString());
 		ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
 		for (int i = 0; i < amountOfProposals; i++) {
 			JsonArray jsonTally = jsonTallies.getJsonArray(i);
 			int amountOfGrades = jsonTally.size();
-			Long[] tally = new Long[amountOfGrades];
+			BigInteger[] tally = new BigInteger[amountOfGrades];
 			for (int g = 0; g < amountOfGrades; g++) {
 				JsonValue amountForGrade = jsonTally.get(g);
-				tally[g] = Long.valueOf(amountForGrade.toString());
+				tally[g] = new BigInteger(amountForGrade.toString());
 			}
 			tallies[i] = new ProposalTally(tally);
 		}
@@ -73,6 +74,8 @@ class MajorityJudgmentDeliberatorTest {
 		TallyInterface tally;
 		if ("StaticDefault".equalsIgnoreCase(mode)) {
 			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default"));
+		} else if ("Normalized".equalsIgnoreCase(mode)) {
+			tally = new TallyNormalized(tallies);
 		} else {
 			tally = new Tally(tallies, amountOfParticipants);
 		}

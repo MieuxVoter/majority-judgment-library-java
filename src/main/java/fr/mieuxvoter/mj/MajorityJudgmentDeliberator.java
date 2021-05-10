@@ -18,11 +18,10 @@ import java.util.Comparator;
  * 
  * https://en.wikipedia.org/wiki/Majority_judgment
  * https://fr.wikipedia.org/wiki/Jugement_majoritaire
- * 
- * Should this class be "final" ?
  */
-public class MajorityJudgmentDeliberator implements DeliberatorInterface {
+final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
+	@Override
 	public ResultInterface deliberate(TallyInterface tally) {
 		ProposalTallyInterface[] tallies = tally.getProposalsTallies();
 		BigInteger amountOfJudges = tally.getAmountOfJudges();
@@ -41,7 +40,7 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 			proposalResults[proposalIndex] = proposalResult;
 		}
 		
-		// II. Sort Proposals by score
+		// II. Sort Proposals by score (lexicographical inverse)
 		ProposalResult[] proposalResultsSorted = proposalResults.clone();
 		assert(proposalResultsSorted[0].hashCode() == proposalResults[0].hashCode()); // we need a shallow clone
 		Arrays.sort(proposalResultsSorted, new Comparator<ProposalResultInterface>() {
@@ -70,11 +69,21 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		return result;
 	}
 	
-	public String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
+	protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
 		return computeScore(tally, amountOfJudges, true, false);
 	}
 
-	public String computeScore(
+	/**
+	 * A higher score means a better rank.
+	 * Assumes that grades' tallies are provided from "worst" grade to "best" grade.
+	 * 
+	 * @param tally Holds the tallies of each Grade for a single Proposal
+	 * @param amountOfJudges
+	 * @param favorContestation
+	 * @param onlyNumbers Do not use separation characters, match `^[0-9]+$`
+	 * @return
+	 */
+	protected String computeScore(
 			ProposalTallyInterface tally,
 			BigInteger amountOfJudges,
 			Boolean favorContestation,
@@ -82,8 +91,8 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 	) {
 		ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
 		int amountOfGrades = tally.getTally().length;
-		int digitsForGrade = ("" + amountOfGrades).length();
-		int digitsForGroup = ("" + amountOfJudges).length() + 1;
+		int digitsForGrade = countDigits(amountOfGrades);
+		int digitsForGroup = countDigits(amountOfJudges) + 1;
 		
 		ProposalTallyInterface currentTally = tally.duplicate();
 		
@@ -107,6 +116,7 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 			
 			score += String.format(
 					"%0"+digitsForGroup+"d",
+					// We offset by amountOfJudges to keep a lexicographical order (no negatives)
 					// amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
 					amountOfJudges.add(
 							analysis.getSecondMedianGroupSize().multiply(
@@ -119,6 +129,14 @@ public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		}
 		
 		return score;
+	}
+
+	protected int countDigits(int number) {
+		return ("" + number).length();
+	}
+
+	protected int countDigits(BigInteger number) {
+		return ("" + number).length();
 	}
 
 }

@@ -1,14 +1,23 @@
 # Majority Judgment Library for Java
 
 [![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-java)](./LICENSE.md)
-![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-library-java/Java%20CI%20with%20Maven)
-![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)
+[![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-library-java/Java%20CI%20with%20Maven)](https://github.com/MieuxVoter/majority-judgment-library-java/actions)
+[![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg)](https://discord.gg/rAAQG9S)
 
 Test-driven java library to help deliberate using Majority Judgment.
 
 The goal is to be **scalable**, **reliable**, fast and extensible.
 We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ whatsoever.
+
+
+## Features
+
+- Supports billions of participants
+- Supports thousands of proposals
+- Handles default grades (static or normalized)
+- No floating-point arithmetic
+- Room for other deliberators (central, usual)
 
 
 ## Example Usage
@@ -48,6 +57,8 @@ Got even more than that ?  Use `BigInteger`s !
 
 Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a `Tally`.
 
+Want to normalize the tallies ?  Use a `TallyNormalized` instead of a `Tally`.
+
 
 ## Roadmap
 
@@ -60,8 +71,8 @@ Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a
 - [ ] Guess the amount of judges
 - [ ] Allow defining a default grade
 	- [x] Static Grade (configurable)
+	- [x] Normalization (using least common multiple)
 	- [ ] Median Grade
-	- [ ] Normalization (using least common multiple)
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
     - [ ] Gradle

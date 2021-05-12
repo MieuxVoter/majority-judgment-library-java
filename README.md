@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg)](https://discord.gg/rAAQG9S)
 
-Test-driven java library to help deliberate using Majority Judgment.
+Test-driven java library to help deliberate using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).
 
 The goal is to be **scalable**, **reliable**, fast and extensible.
 We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ whatsoever.

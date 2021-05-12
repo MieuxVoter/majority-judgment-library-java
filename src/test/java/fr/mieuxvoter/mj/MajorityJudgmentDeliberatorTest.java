@@ -110,6 +110,25 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(1, result.getProposalResults()[1].getRank());
 	}
 
+	@Test
+	public void testWithThousandsOfProposals() {
+		int amountOfProposals = 1337;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
+		for (int i = 0 ; i < amountOfProposals ; i++) {
+			tallies[i] = new ProposalTally(new Integer[]{ 0, 2, 1 });
+		}
+		TallyInterface tally = new TallyWithDefaultGrade(tallies, 3, 0);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(amountOfProposals, result.getProposalResults().length);
+		for (int i = 0 ; i < amountOfProposals ; i++) {
+			assertEquals(1, result.getProposalResults()[i].getRank());
+		}
+	}
+
 //	@Test
 //	public void runBenchmarks() throws Exception {
 //		Options options = new OptionsBuilder()

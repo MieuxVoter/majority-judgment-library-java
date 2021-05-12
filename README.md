@@ -68,7 +68,7 @@ Want to normalize the tallies ?  Use a `TallyNormalized` instead of a `Tally`.
 	- [x] Score Calculus
 	- [x] Ranking
 - [x] Release v0.1.0
-- [ ] Guess the amount of judges
+- [x] Guess the amount of judges
 - [ ] Allow defining a default grade
 	- [x] Static Grade (configurable)
 	- [x] Normalization (using least common multiple)

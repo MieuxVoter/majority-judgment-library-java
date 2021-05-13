@@ -55,7 +55,22 @@ Got more than 2³² judges?  Use a `Long[]` in a `ProposalTally`.
 
 Got even more than that ?  Use `BigInteger`s !
 
+
+### Using a static default grade
+
 Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a `Tally`.
+
+```java
+Integer amountOfJudges = 18;
+Integer defaultGrade = 0;  // "worst" grade (usually "to reject")
+TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
+        // Amounts of judgments received of each grade, from "worst" grade to "best" grade
+        new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),  // Proposal A
+        new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),  // Proposal B
+        // …
+}, amountOfJudges, defaultGrade);
+```
+
 
 Want to normalize the tallies ?  Use a `TallyNormalized` instead of a `Tally`.
 

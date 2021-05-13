@@ -72,7 +72,22 @@ TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
 ```
 
 
-Want to normalize the tallies ?  Use a `TallyNormalized` instead of a `Tally`.
+### Using normalized tallies
+
+In some polls with a very high amount of proposals, where participants cannot be expected to judge every last one of them, it may make sense to normalize the tallies instead of using a default grade.
+
+To that effect, use a `TallyNormalized` instead of a `Tally`.
+
+```java
+TallyInterface tally = new TallyNormalized(new ProposalTallyInterface[] {
+        // Amounts of judgments received of each grade, from "worst" grade to "best" grade
+        new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),  // Proposal A
+        new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),  // Proposal B
+        // …
+});
+```
+
+> This normalization uses the Least Common Multiple, in order to skip floating-point arithmetic.
 
 
 ## Roadmap

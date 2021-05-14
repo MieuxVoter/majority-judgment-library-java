@@ -34,6 +34,7 @@ Let's say you have the following tally:
 |     …      |           |      |          |               |      |           |           |
 |            |           |      |          |               |      |           |           |
 
+> A _Tally_ is the amount of judgments received per grade, by each proposal.
 
 ``` java
 DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -95,20 +96,19 @@ TallyInterface tally = new TallyNormalized(new ProposalTallyInterface[] {
 It's usually best to use structured queries (eg: in SQL) directly in your database to collect the tallies, since it scales better with high amounts of participants, but if you must you can collect the tally directly from individual judgments, with a `CollectedTally`.
 
 ```java
-Integer amountOfProposals = 3;
+Integer amountOfProposals = 2;
 Integer amountOfGrades = 4;
 DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 CollectedTally tally = new CollectedTally(amountOfProposals, amountOfGrades);
 
 Integer firstProposal = 0;
 Integer secondProposal = 1;
-Integer thirdProposal = 2;
 Integer gradeReject = 0;
 Integer gradePassable = 1;
 Integer gradeGood = 2;
 Integer gradeExcellent = 3;
 
-// Collect the judgments one-by-one with `collect()`, for example:
+// Collect the judgments, one-by-one, with `collect()`
 tally.collect(firstProposal, gradeReject);
 tally.collect(firstProposal, gradeReject);
 tally.collect(firstProposal, gradePassable);
@@ -125,13 +125,7 @@ tally.collect(secondProposal, gradeGood);
 tally.collect(secondProposal, gradeExcellent);
 tally.collect(secondProposal, gradeExcellent);
 
-tally.collect(thirdProposal, gradeReject);
-tally.collect(thirdProposal, gradePassable);
-tally.collect(thirdProposal, gradeGood);
-tally.collect(thirdProposal, gradeGood);
-tally.collect(thirdProposal, gradeGood);
-tally.collect(thirdProposal, gradeExcellent);
-tally.collect(thirdProposal, gradeExcellent);
+// …
 
 ResultInterface result = mj.deliberate(tally);
 ```

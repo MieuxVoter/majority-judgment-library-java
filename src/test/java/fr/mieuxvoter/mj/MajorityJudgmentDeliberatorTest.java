@@ -95,12 +95,64 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
+	public void testDemoUsageCollectedTally() {
+		Integer amountOfProposals = 3;
+		Integer amountOfGrades = 4;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		CollectedTally tally = new CollectedTally(amountOfProposals, amountOfGrades);
+		
+		Integer firstProposal = 0;
+		Integer secondProposal = 1;
+		Integer thirdProposal = 2;
+		Integer gradeReject = 0;
+		Integer gradePassable = 1;
+		Integer gradeGood = 2;
+		Integer gradeExcellent = 3;
+		
+		tally.collect(firstProposal, gradeReject);
+		tally.collect(firstProposal, gradeReject);
+		tally.collect(firstProposal, gradePassable);
+		tally.collect(firstProposal, gradePassable);
+		tally.collect(firstProposal, gradePassable);
+		tally.collect(firstProposal, gradeExcellent);
+		tally.collect(firstProposal, gradeExcellent);
+		tally.collect(firstProposal, gradeExcellent);
+		
+		tally.collect(secondProposal, gradeReject);
+		tally.collect(secondProposal, gradeReject);
+		tally.collect(secondProposal, gradeGood);
+		tally.collect(secondProposal, gradeGood);
+		tally.collect(secondProposal, gradeGood);
+		tally.collect(secondProposal, gradeGood);
+		tally.collect(secondProposal, gradeExcellent);
+		tally.collect(secondProposal, gradeExcellent);
+		
+		tally.collect(thirdProposal, gradeReject);
+		tally.collect(thirdProposal, gradeReject);
+		tally.collect(thirdProposal, gradePassable);
+		tally.collect(thirdProposal, gradeGood);
+		tally.collect(thirdProposal, gradeGood);
+		tally.collect(thirdProposal, gradeGood);
+		tally.collect(thirdProposal, gradeExcellent);
+		tally.collect(thirdProposal, gradeExcellent);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(3, result.getProposalResults().length);
+		assertEquals(3, result.getProposalResults()[0].getRank());
+		assertEquals(1, result.getProposalResults()[1].getRank());
+		assertEquals(2, result.getProposalResults()[2].getRank());
+	}
+
+	@Test
 	public void testWithStaticDefaultGrade() {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		Integer defaultGrade = 0;
 		TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
 				new ProposalTally(new Integer[]{ 0, 0, 1 }),
 				new ProposalTally(new Integer[]{ 0, 3, 0 }),
-		}, 3L, 0);
+		}, 3L, defaultGrade);
 		
 		ResultInterface result = mj.deliberate(tally);
 		

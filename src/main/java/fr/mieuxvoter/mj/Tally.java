@@ -2,6 +2,9 @@ package fr.mieuxvoter.mj;
 
 import java.math.BigInteger;
 
+/**
+ * A Basic implementation of a TallyInterface that reads from an array of ProposalTallyInterface.
+ */
 public class Tally implements TallyInterface {
 
 	protected ProposalTallyInterface[] proposalsTallies;

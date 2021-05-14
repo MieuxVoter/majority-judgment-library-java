@@ -3,9 +3,9 @@ package fr.mieuxvoter.mj;
 import java.math.BigInteger;
 import java.security.InvalidParameterException;
 
-public class TallyNormalized extends Tally implements TallyInterface {
+public class NormalizedTally extends Tally implements TallyInterface {
 
-	public TallyNormalized(ProposalTallyInterface[] proposalsTallies) {
+	public NormalizedTally(ProposalTallyInterface[] proposalsTallies) {
 		super(proposalsTallies);
 		Integer amountOfProposals = getAmountOfProposals();
 		
@@ -21,13 +21,13 @@ public class TallyNormalized extends Tally implements TallyInterface {
 		
 		// Normalize proposals to the LCM
 		ProposalTally[] normalizedTallies = new ProposalTally[amountOfProposals];
-		for (int i = 0 ; i < amountOfProposals ; i++ ) {
+		for (int i = 0 ; i < amountOfProposals ; i++) {
 			ProposalTallyInterface proposalTally = proposalsTallies[i];
 			ProposalTally normalizedTally = new ProposalTally(proposalTally);
 			BigInteger factor = amountOfJudges.divide(proposalTally.getAmountOfJudgments());
 			Integer amountOfGrades = proposalTally.getTally().length;
 			BigInteger[] gradesTallies = normalizedTally.getTally();
-			for (int j = 0 ; j < amountOfGrades; j++ ) {
+			for (int j = 0 ; j < amountOfGrades; j++) {
 				gradesTallies[j] = gradesTallies[j].multiply(factor);
 			}
 			normalizedTallies[i] = normalizedTally;

@@ -75,7 +75,7 @@ class MajorityJudgmentDeliberatorTest {
 		if ("StaticDefault".equalsIgnoreCase(mode)) {
 			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default"));
 		} else if ("Normalized".equalsIgnoreCase(mode)) {
-			tally = new TallyNormalized(tallies);
+			tally = new NormalizedTally(tallies);
 		} else {
 			tally = new Tally(tallies, amountOfParticipants);
 		}

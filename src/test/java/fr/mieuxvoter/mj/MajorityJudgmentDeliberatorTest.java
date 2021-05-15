@@ -210,14 +210,17 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
-	public void testWithThousandsOfProposals() {
-		int amountOfProposals = 1337;
+	@DisplayName("Test static default grade with millions of proposals")
+	public void testStaticDefaultWithMillionsOfProposals() {
+		int amountOfProposals = 13375111;
+		Integer amountOfJudges = 60000000;
+		Integer defaultGrade = 0;
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
 		for (int i = 0 ; i < amountOfProposals ; i++) {
-			tallies[i] = new ProposalTally(new Integer[]{ 0, 2, 1 });
+			tallies[i] = new ProposalTally(new Integer[]{ 7, 204, 107 });
 		}
-		TallyInterface tally = new TallyWithDefaultGrade(tallies, 3, 0);
+		TallyInterface tally = new TallyWithDefaultGrade(tallies, amountOfJudges, defaultGrade);
 		
 		ResultInterface result = mj.deliberate(tally);
 		

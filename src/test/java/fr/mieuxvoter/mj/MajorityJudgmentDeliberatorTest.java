@@ -16,42 +16,7 @@ import net.joshka.junit.json.params.JsonFileSource;
 
 class MajorityJudgmentDeliberatorTest {
 
-	@Test
-	public void testDemoUsage() {
-		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
-				new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),
-				new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),
-		});
-		
-		ResultInterface result = mj.deliberate(tally);
-		
-		assertNotNull(result);
-		assertEquals(2, result.getProposalResults().length);
-		assertEquals(2, result.getProposalResults()[0].getRank());
-		assertEquals(1, result.getProposalResults()[1].getRank());
-	}
-
-	@Test
-	public void testDemoUsageWithBigNumbers() {
-		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
-				new ProposalTally(new Long[]{11312415004L, 21153652410L, 24101523299L, 18758623562L}),
-				new ProposalTally(new Long[]{11312415004L, 21153652400L, 24101523299L, 18758623572L}),
-//				new ProposalTally(new Long[]{14526586452L, 40521123260L, 14745623120L, 40526235129L}),
-		});
-		ResultInterface result = mj.deliberate(tally);
-		
-//		System.out.println("Score 0: "+result.getProposalResults()[0].getScore());
-//		System.out.println("Score 1: "+result.getProposalResults()[1].getScore());
-		
-		assertNotNull(result);
-		assertEquals(2, result.getProposalResults().length);
-		assertEquals(2, result.getProposalResults()[0].getRank());
-		assertEquals(1, result.getProposalResults()[1].getRank());
-	}
-
-	@DisplayName("Test majority judgment deliberation")
+	@DisplayName("Test majority judgment deliberation from JSON assertions")
 	@ParameterizedTest(name="#{index} {0}")
 	@JsonFileSource(resources = "/assertions.json")
 	public void testFromJson(JsonObject datum) {
@@ -95,6 +60,44 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
+	@DisplayName("Test the basic demo usage of the README")
+	public void testDemoUsage() {
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),
+				new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),
+		});
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(2, result.getProposalResults().length);
+		assertEquals(2, result.getProposalResults()[0].getRank());
+		assertEquals(1, result.getProposalResults()[1].getRank());
+	}
+
+	@Test
+	@DisplayName("Test the basic demo usage with billions of participants")
+	public void testDemoUsageWithBigNumbers() {
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Long[]{11312415004L, 21153652410L, 24101523299L, 18758623562L}),
+				new ProposalTally(new Long[]{11312415004L, 21153652400L, 24101523299L, 18758623572L}),
+//				new ProposalTally(new Long[]{14526586452L, 40521123260L, 14745623120L, 40526235129L}),
+		});
+		ResultInterface result = mj.deliberate(tally);
+		
+//		System.out.println("Score 0: "+result.getProposalResults()[0].getScore());
+//		System.out.println("Score 1: "+result.getProposalResults()[1].getScore());
+		
+		assertNotNull(result);
+		assertEquals(2, result.getProposalResults().length);
+		assertEquals(2, result.getProposalResults()[0].getRank());
+		assertEquals(1, result.getProposalResults()[1].getRank());
+	}
+
+	@Test
+	@DisplayName("Test the collect demo usage of the README")
 	public void testDemoUsageCollectedTally() {
 		Integer amountOfProposals = 3;
 		Integer amountOfGrades = 4;
@@ -146,6 +149,50 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
+	@DisplayName("Test the normalized collect demo usage of the README")
+	public void testDemoUsageNormalizedCollectedTally() {
+		Integer amountOfProposals = 4;
+		Integer amountOfGrades = 3;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		CollectedTally tally = new CollectedTally(amountOfProposals, amountOfGrades);
+		
+		Integer firstProposal = 0;
+		Integer secondProposal = 1;
+		Integer thirdProposal = 2;
+		Integer fourthProposal = 3;
+		Integer gradeReject = 0;
+		Integer gradePassable = 1;
+		Integer gradeGood = 2;
+		
+		tally.collect(firstProposal, gradeReject);
+		tally.collect(firstProposal, gradeReject);
+		tally.collect(firstProposal, gradePassable);
+		tally.collect(firstProposal, gradePassable);
+		tally.collect(firstProposal, gradeGood);
+		tally.collect(firstProposal, gradeGood);
+		
+		tally.collect(secondProposal, gradeReject);
+		tally.collect(secondProposal, gradePassable);
+		tally.collect(secondProposal, gradeGood);
+		
+		tally.collect(thirdProposal, gradePassable);
+		
+		tally.collect(fourthProposal, gradeGood);
+		
+		ResultInterface result = mj.deliberate(
+				new NormalizedTally(tally)
+		);
+		
+		assertNotNull(result);
+		assertEquals(4, result.getProposalResults().length);
+		assertEquals(3, result.getProposalResults()[0].getRank());
+		assertEquals(3, result.getProposalResults()[1].getRank());
+		assertEquals(2, result.getProposalResults()[2].getRank());
+		assertEquals(1, result.getProposalResults()[3].getRank());
+	}
+
+	@Test
+	@DisplayName("Test with a static default grade (\"worst grade\" == 0)")
 	public void testWithStaticDefaultGrade() {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		Integer defaultGrade = 0;

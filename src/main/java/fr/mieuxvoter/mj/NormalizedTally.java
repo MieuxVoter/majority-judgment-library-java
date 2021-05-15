@@ -3,10 +3,28 @@ package fr.mieuxvoter.mj;
 import java.math.BigInteger;
 import java.security.InvalidParameterException;
 
+/**
+ * The deliberator expects the proposals' tallies to hold the same amount of judgments.
+ * This NormalizedTally accepts tallies with disparate amounts of judgments per proposal,
+ * and normalizes them to their least common multiple, which amounts to using percentages,
+ * except we don't use floating-point arithmetic.
+ * 
+ * This is useful when there are too many proposals for judges to be expected to judge them all,
+ * and all the proposals received reasonably similar amounts of judgments.
+ */
 public class NormalizedTally extends Tally implements TallyInterface {
 
 	public NormalizedTally(ProposalTallyInterface[] proposalsTallies) {
 		super(proposalsTallies);
+		initializeFromProposalsTallies(proposalsTallies);
+	}
+
+	public NormalizedTally(TallyInterface tally) {
+		super(tally.getProposalsTallies());
+		initializeFromProposalsTallies(tally.getProposalsTallies());
+	}
+
+	protected void initializeFromProposalsTallies(ProposalTallyInterface[] proposalsTallies) {
 		Integer amountOfProposals = getAmountOfProposals();
 		
 		// Compute the Least Common Multiple

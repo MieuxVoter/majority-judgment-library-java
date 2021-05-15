@@ -213,7 +213,7 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
-	@DisplayName("Test static default grade with thousands of proposals")
+	@DisplayName("Test static default grade with thousands of proposals and millions of judges")
 	public void testStaticDefaultWithThousandsOfProposals() {
 		int amountOfProposals = 1337;
 		Integer amountOfJudges = 60000000;
@@ -256,6 +256,30 @@ class MajorityJudgmentDeliberatorTest {
 //			assertEquals(1, result.getProposalResults()[i].getRank());
 //		}
 //	}
+
+	@Test
+	@DisplayName("Test with a median default grade")
+	public void testMedianDefaultGrade() {
+		Integer amountOfJudges = 42;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new MedianDefaultTally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 0, 0, 1 }),
+				new ProposalTally(new Integer[]{ 0, 1, 0 }),
+				new ProposalTally(new Integer[]{ 1, 1, 1 }),
+				new ProposalTally(new Integer[]{ 1, 0, 1 }),
+				new ProposalTally(new Integer[]{ 1, 0, 0 }),
+		}, amountOfJudges);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(5, result.getProposalResults().length);
+		assertEquals(1, result.getProposalResults()[0].getRank());
+		assertEquals(2, result.getProposalResults()[1].getRank());
+		assertEquals(3, result.getProposalResults()[2].getRank());
+		assertEquals(4, result.getProposalResults()[3].getRank());
+		assertEquals(5, result.getProposalResults()[4].getRank());
+	}
 
 	@Test
 	@DisplayName("Test normalized tallies with thousands of (prime) proposals")

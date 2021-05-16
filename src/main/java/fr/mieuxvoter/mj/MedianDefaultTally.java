@@ -7,7 +7,12 @@ import java.math.BigInteger;
  * Useful when the proposals have not received the exact same amount of votes and
  * the median grade is considered a sane default.
  */
-public class MedianDefaultTally extends Tally implements TallyInterface {
+public class MedianDefaultTally extends DefaultGradeTally implements TallyInterface {
+
+	public MedianDefaultTally(TallyInterface tally) {
+		super(tally.getProposalsTallies(), tally.getAmountOfJudges());
+		fillWithDefaultGrade();
+	}
 
 	public MedianDefaultTally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
 		super(proposalsTallies, amountOfJudges);
@@ -24,20 +29,10 @@ public class MedianDefaultTally extends Tally implements TallyInterface {
 		fillWithDefaultGrade();
 	}
 
-	protected void fillWithDefaultGrade() {
-		int amountOfProposals = getAmountOfProposals();
-		for (int i = 0 ; i < amountOfProposals ; i++) {
-			ProposalTallyInterface proposal = getProposalsTallies()[i];
-			ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(proposal);
-			Integer defaultGrade = analysis.getMedianGrade();
-			BigInteger amountOfJudgments = proposal.getAmountOfJudgments();
-			BigInteger missingAmount = this.amountOfJudges.subtract(amountOfJudgments);
-			int missingSign = missingAmount.compareTo(BigInteger.ZERO);
-			assert(0 <= missingSign);  // ERROR: More judgments than judges!
-			if (0 < missingSign) {
-				proposal.getTally()[defaultGrade] = proposal.getTally()[defaultGrade].add(missingAmount); 
-			}
-		}
+	@Override
+	protected Integer getDefaultGrade(ProposalTallyInterface proposalTally) {
+		ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(proposalTally);
+		return analysis.getMedianGrade();
 	}
 
 }

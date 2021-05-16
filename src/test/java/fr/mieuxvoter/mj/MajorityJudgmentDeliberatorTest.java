@@ -20,6 +20,9 @@ class MajorityJudgmentDeliberatorTest {
 	@ParameterizedTest(name="#{index} {0}")
 	@JsonFileSource(resources = "/assertions.json")
 	public void testFromJson(JsonObject datum) {
+		// This test uses the JSON file in test/resources/
+		// It also allows testing the various modes of default grades.
+		
 		JsonArray jsonTallies = datum.getJsonArray("tallies");
 		int amountOfProposals = jsonTallies.size();
 		BigInteger amountOfParticipants = new BigInteger(datum.get("participants").toString());
@@ -39,6 +42,8 @@ class MajorityJudgmentDeliberatorTest {
 		TallyInterface tally;
 		if ("StaticDefault".equalsIgnoreCase(mode)) {
 			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default"));
+		} else if ("MedianDefault".equalsIgnoreCase(mode)) {
+			tally = new MedianDefaultTally(tallies, amountOfParticipants);
 		} else if ("Normalized".equalsIgnoreCase(mode)) {
 			tally = new NormalizedTally(tallies);
 		} else {
@@ -287,9 +292,6 @@ class MajorityJudgmentDeliberatorTest {
 		// We're using primes to test the upper bounds of our LCM shenanigans.
 		// This test takes a long time! (3 seconds)
 		
-//		List<Integer> generatedPrimes = sieveOfEratosthenes(15000);
-//		System.out.println(generatedPrimes);
-		
 		int amountOfProposals = primes.length; // 1437
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		ProposalTallyInterface[] tallies = new ProposalTallyInterface[amountOfProposals];
@@ -306,7 +308,7 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(amountOfProposals, result.getProposalResults().length);
 		for (int i = 0 ; i < amountOfProposals ; i++) {
 			assertEquals(
-					1 + (i % primes.length), result.getProposalResults()[i].getRank(),
+					1 + i,  result.getProposalResults()[i].getRank(),
 					"Rank of Proposal #" + i
 			);
 		}
@@ -316,7 +318,7 @@ class MajorityJudgmentDeliberatorTest {
 	@DisplayName("Test normalized tallies with thousands of proposals")
 	public void testNormalizedWithThousandsOfProposals() {
 		// This test is faster than the primes one (0.4 seconds),
-		// since primes are the worst case-scenario for our LCM.
+		// since primes are the worst-case scenario for our LCM.
 		
 		int amountOfProposals = primes.length; // 1437
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -333,11 +335,13 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(amountOfProposals, result.getProposalResults().length);
 		for (int i = 0 ; i < amountOfProposals ; i++) {
 			assertEquals(
-					1 + (i % primes.length), result.getProposalResults()[i].getRank(),
+					1 + i,  result.getProposalResults()[i].getRank(),
 					"Rank of Proposal #" + i
 			);
 		}
 	}
+
+	// …
 
 //	@Test
 //	public void runBenchmarks() throws Exception {

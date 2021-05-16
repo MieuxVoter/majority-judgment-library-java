@@ -8,6 +8,13 @@ import java.math.BigInteger;
  */
 abstract public class DefaultGradeTally extends Tally implements TallyInterface {
 
+	/**
+	 * Override this to choose the default grade for a given proposal.
+	 */
+	abstract protected Integer getDefaultGradeForProposal(ProposalTallyInterface proposalTally);
+
+	// <domi41> /me is confused with why we need constructors in an abstract class?
+	
 	public DefaultGradeTally(TallyInterface tally) {
 		super(tally.getProposalsTallies(), tally.getAmountOfJudges());
 	}
@@ -15,11 +22,11 @@ abstract public class DefaultGradeTally extends Tally implements TallyInterface 
 	public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
 		super(proposalsTallies, amountOfJudges);
 	}
-	
+
 	public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges) {
 		super(proposalsTallies, amountOfJudges);
 	}
-	
+
 	public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
 		super(proposalsTallies, amountOfJudges);
 	}
@@ -27,18 +34,17 @@ abstract public class DefaultGradeTally extends Tally implements TallyInterface 
 	protected void fillWithDefaultGrade() {
 		int amountOfProposals = getAmountOfProposals();
 		for (int i = 0 ; i < amountOfProposals ; i++) {
-			ProposalTallyInterface proposal = getProposalsTallies()[i];
-			Integer defaultGrade = getDefaultGrade(proposal);
-			BigInteger amountOfJudgments = proposal.getAmountOfJudgments();
+			ProposalTallyInterface proposalTally = getProposalsTallies()[i];
+			Integer defaultGrade = getDefaultGradeForProposal(proposalTally);
+			BigInteger amountOfJudgments = proposalTally.getAmountOfJudgments();
 			BigInteger missingAmount = this.amountOfJudges.subtract(amountOfJudgments);
 			int missingSign = missingAmount.compareTo(BigInteger.ZERO);
 			assert(0 <= missingSign);  // ERROR: More judgments than judges!
 			if (0 < missingSign) {
-				proposal.getTally()[defaultGrade] = proposal.getTally()[defaultGrade].add(missingAmount); 
+				BigInteger[] rawTally = proposalTally.getTally();
+				rawTally[defaultGrade] = rawTally[defaultGrade].add(missingAmount);
 			}
 		}
 	}
-
-	abstract protected Integer getDefaultGrade(ProposalTallyInterface proposalTally);
 
 }

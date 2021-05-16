@@ -43,7 +43,7 @@ public class TallyWithDefaultGrade extends DefaultGradeTally implements TallyInt
 	}
 
 	@Override
-	protected Integer getDefaultGrade(ProposalTallyInterface proposalTally) {
+	protected Integer getDefaultGradeForProposal(ProposalTallyInterface proposalTally) {
 		return this.defaultGrade;
 	}
 

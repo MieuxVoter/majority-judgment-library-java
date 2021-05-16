@@ -30,7 +30,7 @@ public class MedianDefaultTally extends DefaultGradeTally implements TallyInterf
 	}
 
 	@Override
-	protected Integer getDefaultGrade(ProposalTallyInterface proposalTally) {
+	protected Integer getDefaultGradeForProposal(ProposalTallyInterface proposalTally) {
 		ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(proposalTally);
 		return analysis.getMedianGrade();
 	}

@@ -2,9 +2,27 @@ package fr.mieuxvoter.mj;
 
 import java.math.BigInteger;
 
-public class TallyWithDefaultGrade extends Tally implements TallyInterface {
+public class TallyWithDefaultGrade extends DefaultGradeTally implements TallyInterface {
 
+	/**
+	 * Grades are represented as numbers, as indices in a list.
+	 * Grades start from 0 ("worst" grade, most conservative) and go upwards.
+	 * Values out of the range of grades defined in the tally will yield errors.
+	 * 
+	 * Example:
+	 * 
+	 *     0 == REJECT
+	 *     1 == PASSABLE
+	 *     2 == GOOD
+	 *     3 == EXCELLENT
+	 */
 	protected Integer defaultGrade = 0;
+
+	public TallyWithDefaultGrade(TallyInterface tally, Integer defaultGrade) {
+		super(tally.getProposalsTallies(), tally.getAmountOfJudges());
+		this.defaultGrade = defaultGrade;
+		fillWithDefaultGrade();
+	}
 	
 	public TallyWithDefaultGrade(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges, Integer defaultGrade) {
 		super(proposalsTallies, amountOfJudges);
@@ -17,25 +35,16 @@ public class TallyWithDefaultGrade extends Tally implements TallyInterface {
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();
 	}
-	
+
 	public TallyWithDefaultGrade(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges, Integer defaultGrade) {
 		super(proposalsTallies, amountOfJudges);
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();
 	}
-	
-	protected void fillWithDefaultGrade() {
-		int amountOfProposals = getAmountOfProposals();
-		for (int i = 0 ; i < amountOfProposals ; i++) {
-			ProposalTallyInterface proposal = getProposalsTallies()[i];
-			BigInteger amountOfJudgments = proposal.getAmountOfJudgments();
-			BigInteger missingAmount = this.amountOfJudges.subtract(amountOfJudgments);
-			int missingSign = missingAmount.compareTo(BigInteger.ZERO);
-			assert(0 <= missingSign);  // ERROR: More judgments than judges!
-			if (0 < missingSign) {
-				proposal.getTally()[this.defaultGrade] = proposal.getTally()[this.defaultGrade].add(missingAmount); 
-			}
-		}
+
+	@Override
+	protected Integer getDefaultGrade(ProposalTallyInterface proposalTally) {
+		return this.defaultGrade;
 	}
 
 }

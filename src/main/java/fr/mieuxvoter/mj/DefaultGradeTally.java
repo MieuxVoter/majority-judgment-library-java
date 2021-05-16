@@ -7,7 +7,7 @@ import java.math.BigInteger;
  * This is an abstract class to dry code between static default grade and median default grade.
  */
 abstract public class DefaultGradeTally extends Tally implements TallyInterface {
-	
+
 	public DefaultGradeTally(TallyInterface tally) {
 		super(tally.getProposalsTallies(), tally.getAmountOfJudges());
 	}

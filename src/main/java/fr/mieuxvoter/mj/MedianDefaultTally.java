@@ -3,7 +3,7 @@ package fr.mieuxvoter.mj;
 import java.math.BigInteger;
 
 /**
- * Fill the missing judgments into the median grade.
+ * Fill the missing judgments into the median grade of each proposal.
  * Useful when the proposals have not received the exact same amount of votes and
  * the median grade is considered a sane default.
  */

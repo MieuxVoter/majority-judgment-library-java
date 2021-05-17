@@ -140,17 +140,17 @@ ResultInterface result = mj.deliberate(tally);
 	- [x] Ranking
 - [x] Release v0.1.0
 - [x] Guess the amount of judges
-- [ ] Allow defining a default grade
+- [x] Allow defining a default grade
 	- [x] Static Grade (configurable)
-	- [x] Normalization (using least common multiple)
-	- [ ] Median Grade
+	- [x] Normalization (using Least Common Multiple)
+	- [x] Median Grade
 - [ ] Release v0.2.0
 - [ ] Publish on package repositories
     - [ ] Gradle
     - [ ] Maven
     - [ ] … ? (please share your knowledge to help us!)
 - [ ] Release v0.3.0
-- [ ] Use it somewhere in another app, adjust API as needed (one last time)
+- [ ] Use it somewhere in an application, adjust API as needed (one last time)
 - [ ] Release v1.0.0
 
 

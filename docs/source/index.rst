@@ -11,6 +11,11 @@ Welcome to Majority Judgment for Java's documentation!
    :caption: Contents:
 
 
+A good place to start is the _README.
+
+
+.. _README: https://github.com/MieuxVoter/majority-judgment-library-java/blob/master/README.md
+
 
 Indices and tables
 ==================

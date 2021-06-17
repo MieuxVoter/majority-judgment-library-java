@@ -38,7 +38,7 @@ public class ProposalTallyAnalysis {
 
 
 	public ProposalTallyAnalysis() {}
-	
+
 	public ProposalTallyAnalysis(ProposalTallyInterface tally) {
 		reanalyze(tally);
 	}
@@ -135,80 +135,40 @@ public class ProposalTallyAnalysis {
 		return totalSize;
 	}
 
-	public void setTotalSize(BigInteger totalSize) {
-		this.totalSize = totalSize;
-	}
-
 	public Integer getMedianGrade() {
 		return medianGrade;
-	}
-
-	public void setMedianGrade(Integer medianGrade) {
-		this.medianGrade = medianGrade;
 	}
 
 	public BigInteger getMedianGroupSize() {
 		return medianGroupSize;
 	}
 
-	public void setMedianGroupSize(BigInteger medianGroupSize) {
-		this.medianGroupSize = medianGroupSize;
-	}
-	
 	public Integer getContestationGrade() {
 		return contestationGrade;
-	}
-
-	public void setContestationGrade(Integer contestationGrade) {
-		this.contestationGrade = contestationGrade;
 	}
 
 	public BigInteger getContestationGroupSize() {
 		return contestationGroupSize;
 	}
 
-	public void setContestationGroupSize(BigInteger contestationGroupSize) {
-		this.contestationGroupSize = contestationGroupSize;
-	}
-
 	public Integer getAdhesionGrade() {
 		return adhesionGrade;
-	}
-
-	public void setAdhesionGrade(Integer adhesionGrade) {
-		this.adhesionGrade = adhesionGrade;
 	}
 
 	public BigInteger getAdhesionGroupSize() {
 		return adhesionGroupSize;
 	}
 
-	public void setAdhesionGroupSize(BigInteger adhesionGroupSize) {
-		this.adhesionGroupSize = adhesionGroupSize;
-	}
-
 	public Integer getSecondMedianGrade() {
 		return secondMedianGrade;
-	}
-
-	public void setSecondMedianGrade(Integer secondMedianGrade) {
-		this.secondMedianGrade = secondMedianGrade;
 	}
 
 	public BigInteger getSecondMedianGroupSize() {
 		return secondMedianGroupSize;
 	}
 
-	public void setSecondMedianGroupSize(BigInteger secondMedianGroupSize) {
-		this.secondMedianGroupSize = secondMedianGroupSize;
-	}
-
 	public Integer getSecondMedianGroupSign() {
 		return secondMedianGroupSign;
-	}
-
-	public void setSecondMedianGroupSign(Integer sign) {
-		this.secondMedianGroupSign = sign;
 	}
 
 }

@@ -41,7 +41,7 @@ class MajorityJudgmentDeliberatorTest {
 		String mode = datum.getString("mode", "None");
 		TallyInterface tally;
 		if ("StaticDefault".equalsIgnoreCase(mode)) {
-			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default"));
+			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default", 0));
 		} else if ("MedianDefault".equalsIgnoreCase(mode)) {
 			tally = new MedianDefaultTally(tallies, amountOfParticipants);
 		} else if ("Normalized".equalsIgnoreCase(mode)) {

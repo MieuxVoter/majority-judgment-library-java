@@ -34,8 +34,11 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
 			ProposalTallyInterface proposalTally = tallies[proposalIndex];
 			String score = computeScore(proposalTally, amountOfJudges);
+			ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
+			analysis.reanalyze(proposalTally);
 			ProposalResult proposalResult = new ProposalResult();
 			proposalResult.setScore(score);
+			proposalResult.setAnalysis(analysis);
 			//proposalResult.setRank(???); // rank is computed below, AFTER the score pass
 			proposalResults[proposalIndex] = proposalResult;
 		}
@@ -68,7 +71,7 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		result.setProposalResults(proposalResults);
 		return result;
 	}
-	
+
 	protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
 		return computeScore(tally, amountOfJudges, true, false);
 	}
@@ -77,11 +80,11 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 	 * A higher score means a better rank.
 	 * Assumes that grades' tallies are provided from "worst" grade to "best" grade.
 	 * 
-	 * @param tally Holds the tallies of each Grade for a single Proposal
+	 * @param tally              Holds the tallies of each Grade for a single Proposal
 	 * @param amountOfJudges
-	 * @param favorContestation
-	 * @param onlyNumbers Do not use separation characters, match `^[0-9]+$`
-	 * @return
+	 * @param favorContestation  Use the lower median, for example
+	 * @param onlyNumbers        Do not use separation characters, match `^[0-9]+$`
+	 * @return the score of the proposal
 	 */
 	protected String computeScore(
 			ProposalTallyInterface tally,
@@ -106,7 +109,7 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 			}
 			
 			score += String.format(
-					"%0"+digitsForGrade+"d",
+					"%0" + digitsForGrade + "d",
 					analysis.getMedianGrade()
 			);
 			
@@ -115,7 +118,7 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 			}
 			
 			score += String.format(
-					"%0"+digitsForGroup+"d",
+					"%0" + digitsForGroup + "d",
 					// We offset by amountOfJudges to keep a lexicographical order (no negatives)
 					// amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
 					amountOfJudges.add(

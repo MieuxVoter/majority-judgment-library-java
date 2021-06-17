@@ -341,7 +341,33 @@ class MajorityJudgmentDeliberatorTest {
 		}
 	}
 
+	@Test
+	@DisplayName("Test favoring adhesion")
+	public void testFavoringAdhesion() {
+		boolean favorContestation = false;
+		Integer amountOfJudges = 4;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator(favorContestation);
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 2, 0, 2 }),
+				new ProposalTally(new Integer[]{ 0, 2, 2 }),
+				new ProposalTally(new Integer[]{ 2, 1, 1 }),
+		}, amountOfJudges);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals(3, result.getProposalResults().length);
+		assertEquals(2, result.getProposalResults()[0].getRank());
+		assertEquals(1, result.getProposalResults()[1].getRank());
+		assertEquals(3, result.getProposalResults()[2].getRank());
+		assertEquals(2, result.getProposalResults()[0].getAnalysis().getMedianGrade());
+		assertEquals(2, result.getProposalResults()[1].getAnalysis().getMedianGrade());
+		assertEquals(1, result.getProposalResults()[2].getAnalysis().getMedianGrade());
+	}
+
+
 	// …
+
 
 //	@Test
 //	public void runBenchmarks() throws Exception {

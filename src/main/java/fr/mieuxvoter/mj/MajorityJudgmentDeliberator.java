@@ -18,8 +18,24 @@ import java.util.Comparator;
  * 
  * https://en.wikipedia.org/wiki/Majority_judgment
  * https://fr.wikipedia.org/wiki/Jugement_majoritaire
+ * 
+ * Should this class be `final`?
  */
 final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
+
+	protected boolean favorContestation = true;
+	protected boolean numerizeScore = false;
+
+	public MajorityJudgmentDeliberator() {}
+
+	public MajorityJudgmentDeliberator(boolean favorContestation) {
+		this.favorContestation = favorContestation;
+	}
+
+	public MajorityJudgmentDeliberator(boolean favorContestation, boolean numerizeScore) {
+		this.favorContestation = favorContestation;
+		this.numerizeScore = numerizeScore;
+	}
 
 	@Override
 	public ResultInterface deliberate(TallyInterface tally) {
@@ -34,8 +50,7 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
 			ProposalTallyInterface proposalTally = tallies[proposalIndex];
 			String score = computeScore(proposalTally, amountOfJudges);
-			ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
-			analysis.reanalyze(proposalTally);
+			ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(proposalTally, this.favorContestation);
 			ProposalResult proposalResult = new ProposalResult();
 			proposalResult.setScore(score);
 			proposalResult.setAnalysis(analysis);
@@ -73,7 +88,7 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 	}
 
 	protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
-		return computeScore(tally, amountOfJudges, true, false);
+		return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
 	}
 
 	/**

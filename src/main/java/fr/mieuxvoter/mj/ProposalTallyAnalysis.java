@@ -43,10 +43,14 @@ public class ProposalTallyAnalysis {
 		reanalyze(tally);
 	}
 
+	public ProposalTallyAnalysis(ProposalTallyInterface tally, Boolean favorContestation) {
+		reanalyze(tally, favorContestation);
+	}
+
 	public void reanalyze(ProposalTallyInterface tally) {
 		reanalyze(tally, true);
 	}
-	
+
 	public void reanalyze(ProposalTallyInterface tally, Boolean favorContestation) {
 		this.tally = tally;
 		this.totalSize = BigInteger.ZERO;

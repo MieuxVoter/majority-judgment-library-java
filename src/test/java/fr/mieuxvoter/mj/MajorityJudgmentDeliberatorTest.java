@@ -1,5 +1,6 @@
 package fr.mieuxvoter.mj;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
@@ -8,6 +9,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
+import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +21,7 @@ class MajorityJudgmentDeliberatorTest {
 	@DisplayName("Test majority judgment deliberation from JSON assertions")
 	@ParameterizedTest(name="#{index} {0}")
 	@JsonFileSource(resources = "/assertions.json")
-	public void testFromJson(JsonObject datum) {
+	public void testFromJson(JsonObject datum) throws Throwable {
 		// This test uses the JSON file in test/resources/
 		// It also allows testing the various modes of default grades.
 		
@@ -41,7 +43,7 @@ class MajorityJudgmentDeliberatorTest {
 		String mode = datum.getString("mode", "None");
 		TallyInterface tally;
 		if ("StaticDefault".equalsIgnoreCase(mode)) {
-			tally = new TallyWithDefaultGrade(tallies, amountOfParticipants, datum.getInt("default", 0));
+			tally = new StaticDefaultTally(tallies, amountOfParticipants, datum.getInt("default", 0));
 		} else if ("MedianDefault".equalsIgnoreCase(mode)) {
 			tally = new MedianDefaultTally(tallies, amountOfParticipants);
 		} else if ("Normalized".equalsIgnoreCase(mode)) {
@@ -66,7 +68,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test the basic demo usage of the README")
-	public void testDemoUsage() {
+	public void testDemoUsage() throws Throwable {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
 				new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),
@@ -83,7 +85,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test the basic demo usage with billions of participants")
-	public void testDemoUsageWithBigNumbers() {
+	public void testDemoUsageWithBigNumbers() throws Throwable {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
 				new ProposalTally(new Long[]{11312415004L, 21153652410L, 24101523299L, 18758623562L}),
@@ -103,7 +105,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test the collect demo usage of the README")
-	public void testDemoUsageCollectedTally() {
+	public void testDemoUsageCollectedTally() throws Throwable {
 		Integer amountOfProposals = 3;
 		Integer amountOfGrades = 4;
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -155,7 +157,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test the normalized collect demo usage of the README")
-	public void testDemoUsageNormalizedCollectedTally() {
+	public void testDemoUsageNormalizedCollectedTally() throws Throwable {
 		Integer amountOfProposals = 4;
 		Integer amountOfGrades = 3;
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -198,11 +200,11 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test with a static default grade (\"worst grade\" == 0)")
-	public void testWithStaticDefaultGrade() {
+	public void testWithStaticDefaultGrade() throws Throwable {
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		Long amountOfJudges = 3L;
 		Integer defaultGrade = 0;
-		TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
+		TallyInterface tally = new StaticDefaultTally(new ProposalTallyInterface[] {
 				new ProposalTally(new Integer[]{ 0, 0, 1 }),
 				new ProposalTally(new Integer[]{ 0, 3, 0 }),
 				new ProposalTally(new Integer[]{ 2, 0, 1 }),
@@ -219,7 +221,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test static default grade with thousands of proposals and millions of judges")
-	public void testStaticDefaultWithThousandsOfProposals() {
+	public void testStaticDefaultWithThousandsOfProposals() throws Throwable {
 		int amountOfProposals = 1337;
 		Integer amountOfJudges = 60000000;
 		Integer defaultGrade = 0;
@@ -228,7 +230,7 @@ class MajorityJudgmentDeliberatorTest {
 		for (int i = 0 ; i < amountOfProposals ; i++) {
 			tallies[i] = new ProposalTally(new Integer[]{ 7, 204, 107 });
 		}
-		TallyInterface tally = new TallyWithDefaultGrade(tallies, amountOfJudges, defaultGrade);
+		TallyInterface tally = new StaticDefaultTally(tallies, amountOfJudges, defaultGrade);
 		
 		ResultInterface result = mj.deliberate(tally);
 		
@@ -264,7 +266,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test with a median default grade")
-	public void testMedianDefaultGrade() {
+	public void testMedianDefaultGrade() throws Throwable {
 		Integer amountOfJudges = 42;
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
 		TallyInterface tally = new MedianDefaultTally(new ProposalTallyInterface[] {
@@ -288,7 +290,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test normalized tallies with thousands of (prime) proposals")
-	public void testNormalizedWithThousandsOfPrimeProposals() {
+	public void testNormalizedWithThousandsOfPrimeProposals() throws Throwable {
 		// We're using primes to test the upper bounds of our LCM shenanigans.
 		// This test takes a long time! (3 seconds)
 		
@@ -316,7 +318,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test normalized tallies with thousands of proposals")
-	public void testNormalizedWithThousandsOfProposals() {
+	public void testNormalizedWithThousandsOfProposals() throws Throwable {
 		// This test is faster than the primes one (0.4 seconds),
 		// since primes are the worst-case scenario for our LCM.
 		
@@ -343,7 +345,7 @@ class MajorityJudgmentDeliberatorTest {
 
 	@Test
 	@DisplayName("Test favoring adhesion")
-	public void testFavoringAdhesion() {
+	public void testFavoringAdhesion() throws Exception {
 		boolean favorContestation = false;
 		Integer amountOfJudges = 4;
 		DeliberatorInterface mj = new MajorityJudgmentDeliberator(favorContestation);
@@ -363,6 +365,51 @@ class MajorityJudgmentDeliberatorTest {
 		assertEquals(2, result.getProposalResults()[0].getAnalysis().getMedianGrade());
 		assertEquals(2, result.getProposalResults()[1].getAnalysis().getMedianGrade());
 		assertEquals(1, result.getProposalResults()[2].getAnalysis().getMedianGrade());
+	}
+
+	@Test
+	@DisplayName("Fail on unbalanced tallies")
+	public void testFailureOnUnbalancedTallies() {
+		Integer amountOfJudges = 2;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 0, 0, 2 }),
+				new ProposalTally(new Integer[]{ 0, 1, 0 }),
+				new ProposalTally(new Integer[]{ 2, 0, 0 }),
+		}, amountOfJudges);
+		
+		assertThrows(
+				"An exception is raised",
+				UnbalancedTallyException.class,
+				new ThrowingRunnable() {
+					@Override
+					public void run() throws Throwable {
+						mj.deliberate(tally);
+					}
+				}
+		);
+	}
+
+	@Test
+	@DisplayName("Fail on negative tallies")
+	public void testFailureOnNegativeTallies() {
+		Integer amountOfJudges = 2;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 0, 4, -2 }),
+				new ProposalTally(new Integer[]{ 0, 2, 0 }),
+		}, amountOfJudges);
+		
+		assertThrows(
+				"An exception is raised",
+				IncoherentTallyException.class,
+				new ThrowingRunnable() {
+					@Override
+					public void run() throws Throwable {
+						mj.deliberate(tally);
+					}
+				}
+		);
 	}
 
 

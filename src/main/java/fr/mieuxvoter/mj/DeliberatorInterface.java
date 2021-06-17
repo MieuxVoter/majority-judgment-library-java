@@ -18,6 +18,6 @@ package fr.mieuxvoter.mj;
  */
 public interface DeliberatorInterface {
 
-	public ResultInterface deliberate(TallyInterface tally);
+	public ResultInterface deliberate(TallyInterface tally) throws InvalidTallyException;
 
 }

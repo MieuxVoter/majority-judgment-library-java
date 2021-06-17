@@ -38,7 +38,9 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 	}
 
 	@Override
-	public ResultInterface deliberate(TallyInterface tally) {
+	public ResultInterface deliberate(TallyInterface tally) throws InvalidTallyException {
+		checkTally(tally);
+		
 		ProposalTallyInterface[] tallies = tally.getProposalsTallies();
 		BigInteger amountOfJudges = tally.getAmountOfJudges();
 		Integer amountOfProposals = tally.getAmountOfProposals();
@@ -86,7 +88,50 @@ final public class MajorityJudgmentDeliberator implements DeliberatorInterface {
 		result.setProposalResults(proposalResults);
 		return result;
 	}
+	
+	protected void checkTally(TallyInterface tally) throws UnbalancedTallyException {
+		if ( ! isTallyCoherent(tally)) {
+			throw new IncoherentTallyException();
+		}
+		if ( ! isTallyBalanced(tally)) {
+			throw new UnbalancedTallyException();
+		}
+	}
 
+	protected boolean isTallyCoherent(TallyInterface tally) {
+		boolean coherent = true;
+		for (ProposalTallyInterface proposalTally : tally.getProposalsTallies()) {
+			for (BigInteger gradeTally : proposalTally.getTally()) {
+				if (-1 == gradeTally.compareTo(BigInteger.ZERO)) {
+					coherent = false;  // negative tallies are not coherent
+				}
+			}
+		}
+		
+		return coherent;
+	}
+
+	protected boolean isTallyBalanced(TallyInterface tally) {
+		boolean balanced = true;
+		BigInteger amountOfJudges = BigInteger.ZERO;
+		boolean firstProposal = true;
+		for (ProposalTallyInterface proposalTally : tally.getProposalsTallies()) {
+			if (firstProposal) {
+				amountOfJudges = proposalTally.getAmountOfJudgments();
+				firstProposal = false;
+			} else {
+				if (0 != amountOfJudges.compareTo(proposalTally.getAmountOfJudgments())) {
+					balanced = false;
+				}
+			}
+		}
+		
+		return balanced;
+	}
+
+	/**
+	 * @see computeScore() below
+	 */
 	protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
 		return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
 	}

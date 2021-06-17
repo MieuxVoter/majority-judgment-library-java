@@ -59,12 +59,12 @@ Got even more than that ?  Use `BigInteger`s !
 
 ### Using a static default grade
 
-Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a `Tally`.
+Want to set a static default grade ?  Use a `StaticDefaultTally` instead of a `Tally`.
 
 ```java
 Integer amountOfJudges = 18;
 Integer defaultGrade = 0;  // "worst" grade (usually "to reject")
-TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
+TallyInterface tally = new StaticDefaultTally(new ProposalTallyInterface[] {
         // Amounts of judgments received of each grade, from "worst" grade to "best" grade
         new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),  // Proposal A
         new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),  // Proposal B
@@ -129,29 +129,6 @@ tally.collect(secondProposal, gradeExcellent);
 
 ResultInterface result = mj.deliberate(tally);
 ```
-
-
-## Roadmap
-
-- [x] Unit-Tests
-- [x] Deliberation algorithm
-	- [x] Tally Analysis
-	- [x] Score Calculus
-	- [x] Ranking
-- [x] Release v0.1.0
-- [x] Guess the amount of judges
-- [x] Allow defining a default grade
-	- [x] Static Grade (configurable)
-	- [x] Normalization (using Least Common Multiple)
-	- [x] Median Grade
-- [ ] Release v0.2.0
-- [ ] Publish on package repositories
-    - [ ] Gradle
-    - [ ] Maven
-    - [ ] … ? (please share your knowledge to help us!)
-- [ ] Release v0.3.0
-- [ ] Use it somewhere in an application, adjust API as needed (one last time)
-- [ ] Release v1.0.0
 
 
 ## Gondor calls for Help!

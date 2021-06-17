@@ -2,7 +2,7 @@ package fr.mieuxvoter.mj;
 
 import java.math.BigInteger;
 
-public class TallyWithDefaultGrade extends DefaultGradeTally implements TallyInterface {
+public class StaticDefaultTally extends DefaultGradeTally implements TallyInterface {
 
 	/**
 	 * Grades are represented as numbers, as indices in a list.
@@ -18,25 +18,25 @@ public class TallyWithDefaultGrade extends DefaultGradeTally implements TallyInt
 	 */
 	protected Integer defaultGrade = 0;
 
-	public TallyWithDefaultGrade(TallyInterface tally, Integer defaultGrade) {
+	public StaticDefaultTally(TallyInterface tally, Integer defaultGrade) {
 		super(tally.getProposalsTallies(), tally.getAmountOfJudges());
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();
 	}
 	
-	public TallyWithDefaultGrade(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges, Integer defaultGrade) {
+	public StaticDefaultTally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges, Integer defaultGrade) {
 		super(proposalsTallies, amountOfJudges);
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();
 	}
 
-	public TallyWithDefaultGrade(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges, Integer defaultGrade) {
+	public StaticDefaultTally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges, Integer defaultGrade) {
 		super(proposalsTallies, amountOfJudges);
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();
 	}
 
-	public TallyWithDefaultGrade(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges, Integer defaultGrade) {
+	public StaticDefaultTally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges, Integer defaultGrade) {
 		super(proposalsTallies, amountOfJudges);
 		this.defaultGrade = defaultGrade;
 		fillWithDefaultGrade();

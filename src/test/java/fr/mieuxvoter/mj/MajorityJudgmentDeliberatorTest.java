@@ -368,6 +368,26 @@ class MajorityJudgmentDeliberatorTest {
 	}
 
 	@Test
+	@DisplayName("Test numeric score")
+	public void testNumericScore() throws Exception {
+		boolean favorContestation = true;
+		boolean numerizeScore = true;
+		
+		Integer amountOfJudges = 3;
+		DeliberatorInterface mj = new MajorityJudgmentDeliberator(favorContestation, numerizeScore);
+		TallyInterface tally = new Tally(new ProposalTallyInterface[] {
+				new ProposalTally(new Integer[]{ 1, 0, 2 }),
+				new ProposalTally(new Integer[]{ 0, 2, 1 }),
+		}, amountOfJudges);
+		
+		ResultInterface result = mj.deliberate(tally);
+		
+		assertNotNull(result);
+		assertEquals("202003003", result.getProposalResults()[0].getScore());
+		assertEquals("104203003", result.getProposalResults()[1].getScore());
+	}
+
+	@Test
 	@DisplayName("Fail on unbalanced tallies")
 	public void testFailureOnUnbalancedTallies() {
 		Integer amountOfJudges = 2;

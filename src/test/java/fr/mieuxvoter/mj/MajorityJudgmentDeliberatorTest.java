@@ -1,6 +1,5 @@
 package fr.mieuxvoter.mj;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
@@ -12,6 +11,7 @@ import javax.json.JsonValue;
 import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import net.joshka.junit.json.params.JsonFileSource;
 
@@ -378,16 +378,26 @@ class MajorityJudgmentDeliberatorTest {
 				new ProposalTally(new Integer[]{ 2, 0, 0 }),
 		}, amountOfJudges);
 		
+//		assertThrows(null, null, null);
 		assertThrows(
-				"An exception is raised",
 				UnbalancedTallyException.class,
-				new ThrowingRunnable() {
+				new Executable() {
 					@Override
-					public void run() throws Throwable {
+					public void execute() throws Throwable {
 						mj.deliberate(tally);
 					}
-				}
+				},
+				"An exception is raised"
 		);
+		
+		boolean caught = false;
+		try {
+			mj.deliberate(tally);
+		} catch (UnbalancedTallyException e) {
+			caught = true;
+			assertNotNull(e.getLocalizedMessage());
+		}
+		assertTrue(caught, "An exception is raised");
 	}
 
 	@Test
@@ -401,15 +411,24 @@ class MajorityJudgmentDeliberatorTest {
 		}, amountOfJudges);
 		
 		assertThrows(
-				"An exception is raised",
 				IncoherentTallyException.class,
-				new ThrowingRunnable() {
+				new Executable() {
 					@Override
-					public void run() throws Throwable {
+					public void execute() throws Throwable {
 						mj.deliberate(tally);
 					}
-				}
+				},
+				"An exception is raised"
 		);
+		
+		boolean caught = false;
+		try {
+			mj.deliberate(tally);
+		} catch (IncoherentTallyException e) {
+			caught = true;
+			assertNotNull(e.getLocalizedMessage());
+		}
+		assertTrue(caught, "An exception is raised");
 	}
 
 

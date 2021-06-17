@@ -16,11 +16,4 @@ class IncoherentTallyException extends InvalidTallyException {
 		);
 	}
 
-	@Override
-	public String getLocalizedMessage() {
-		return super.getLocalizedMessage();
-	}
-	
-	
-
 }

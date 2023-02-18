@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
-Test-driven java library to help deliberate using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).
+Test-driven java library to help deliberate (rank proposals) using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).
 
 The goal is to be **scalable**, **reliable**, fast and extensible.
 We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ whatsoever.
@@ -131,13 +131,6 @@ ResultInterface result = mj.deliberate(tally);
 ```
 
 
-## Gondor calls for Help!
-
-We are not accustomed to Java library development and we'd love reviews from seasoned veterans !
-
-Feel free to fork and request merges for your contributions and active readings !
-
-
 ## Run the test-suite
 
 Install [maven](https://maven.apache.org), and run:
@@ -147,18 +140,4 @@ Install [maven](https://maven.apache.org), and run:
 > Maven is available as a debian package: `apt install maven`
 
 You can also use a runner in Eclipse.  (`CTRL+F11` to rerun)
-
-
-## License
-
-[MIT](./LICENSE.md)  →  _Do whatever you want except complain._
-
-Majority Judgment itself is part of the Commons, obviously.
-
-
-## Fund us
-
-We'd love to invest more energy in Majority Judgment development.
-
-Please consider funding us, every bit helps : https://www.paypal.com/donate/?hosted_button_id=QD6U4D323WV4S
 

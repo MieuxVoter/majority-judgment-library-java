@@ -1,13 +1,15 @@
 # Majority Judgment Library for Java
 
-[![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-java)](./LICENSE.md)
-[![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-library-java/Java%20CI%20with%20Maven)](https://github.com/MieuxVoter/majority-judgment-library-java/actions)
-[![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
-[![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg)](https://discord.gg/rAAQG9S)
+[![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-library-java?style=for-the-badge)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/MieuxVoter/majority-judgment-library-java/maven.yml?style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-java/actions)
+[![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-library-java?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-library-java)
+![LoC](https://img.shields.io/tokei/lines/github/MieuxVoter/majority-judgment-library-java?style=for-the-badge)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=coverage)](https://sonarcloud.io/dashboard?id=jeanpic_majority-judgment-library-java)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=jeanpic_majority-judgment-library-java)
+[![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
-Test-driven java library to help deliberate using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).
+Test-driven java library to help deliberate (rank proposals) using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).
 
 The goal is to be **scalable**, **reliable**, fast and extensible.
 We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ whatsoever.
@@ -61,12 +63,12 @@ Got even more than that ?  Use `BigInteger`s !
 
 ### Using a static default grade
 
-Want to set a static default grade ?  Use a `TallyWithDefaultGrade` instead of a `Tally`.
+Want to set a static default grade ?  Use a `StaticDefaultTally` instead of a `Tally`.
 
 ```java
 Integer amountOfJudges = 18;
 Integer defaultGrade = 0;  // "worst" grade (usually "to reject")
-TallyInterface tally = new TallyWithDefaultGrade(new ProposalTallyInterface[] {
+TallyInterface tally = new StaticDefaultTally(new ProposalTallyInterface[] {
         // Amounts of judgments received of each grade, from "worst" grade to "best" grade
         new ProposalTally(new Integer[]{4, 5, 2, 1, 3, 1, 2}),  // Proposal A
         new ProposalTally(new Integer[]{3, 6, 2, 1, 3, 1, 2}),  // Proposal B
@@ -133,36 +135,6 @@ ResultInterface result = mj.deliberate(tally);
 ```
 
 
-## Roadmap
-
-- [x] Unit-Tests
-- [x] Deliberation algorithm
-	- [x] Tally Analysis
-	- [x] Score Calculus
-	- [x] Ranking
-- [x] Release v0.1.0
-- [x] Guess the amount of judges
-- [x] Allow defining a default grade
-	- [x] Static Grade (configurable)
-	- [x] Normalization (using Least Common Multiple)
-	- [x] Median Grade
-- [ ] Release v0.2.0
-- [ ] Publish on package repositories
-    - [ ] Gradle
-    - [ ] Maven
-    - [ ] … ? (please share your knowledge to help us!)
-- [ ] Release v0.3.0
-- [ ] Use it somewhere in an application, adjust API as needed (one last time)
-- [ ] Release v1.0.0
-
-
-## Gondor calls for Help!
-
-We are not accustomed to Java library development and we'd love reviews from seasoned veterans !
-
-Feel free to fork and request merges for your contributions and active readings !
-
-
 ## Run the test-suite
 
 Install [maven](https://maven.apache.org), and run:
@@ -172,18 +144,4 @@ Install [maven](https://maven.apache.org), and run:
 > Maven is available as a debian package: `apt install maven`
 
 You can also use a runner in Eclipse.  (`CTRL+F11` to rerun)
-
-
-## License
-
-[MIT](./LICENSE.md)  →  _Do whatever you want except complain._
-
-Majority Judgment itself is part of the Commons, obviously.
-
-
-## Fund us
-
-We'd love to invest more energy in Majority Judgment development.
-
-Please consider funding us, every bit helps : https://www.paypal.com/donate/?hosted_button_id=QD6U4D323WV4S
 

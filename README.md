@@ -6,7 +6,7 @@
 [![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-library-java?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-library-java)
 ![LoC](https://img.shields.io/tokei/lines/github/MieuxVoter/majority-judgment-library-java?style=for-the-badge)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=coverage&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=alert_status&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
 Test-driven java library to help deliberate (rank proposals) using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).

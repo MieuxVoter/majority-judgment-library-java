@@ -9,7 +9,7 @@ import java.math.BigInteger;
 public class MedianDefaultTally extends DefaultGradeTally implements TallyInterface {
 
     public MedianDefaultTally(TallyInterface tally) {
-        super(tally.getProposalsTallies(), tally.getAmountOfJudges());
+        super(tally);
         fillWithDefaultGrade();
     }
 

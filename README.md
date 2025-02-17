@@ -4,8 +4,8 @@
 [![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-library-java?sort=semver&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-java/releases)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/MieuxVoter/majority-judgment-library-java/maven.yml?style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-library-java/actions)
 [![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-library-java?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-library-java)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=coverage&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MieuxVoter_majority-judgment-library-java&metric=alert_status&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
+[![Coverage](https://img.shields.io/sonar/coverage/fr.mieuxvoter.mj%3Amajority-judgment?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
+[![Quality Gate](https://img.shields.io/sonar/quality_gate/fr.mieuxvoter.mj%3Amajority-judgment?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge)](https://sonarcloud.io/dashboard?id=MieuxVoter_majority-judgment-library-java)
 [![Join the Discord chat at https://discord.gg/rAAQG9S](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
 Test-driven java library to help deliberate (rank proposals) using [Majority Judgment](https://mieuxvoter.fr/index.php/decouvrir/?lang=en).

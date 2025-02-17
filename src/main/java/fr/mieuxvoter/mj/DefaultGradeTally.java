@@ -13,19 +13,19 @@ public abstract class DefaultGradeTally extends Tally implements TallyInterface 
 
     // <domi41> /me is confused with why we need constructors in an abstract class?
 
-    public DefaultGradeTally(TallyInterface tally) {
+    DefaultGradeTally(TallyInterface tally) {
         super(tally.getProposalsTallies(), tally.getAmountOfJudges());
     }
 
-    public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
+    DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
         super(proposalsTallies, amountOfJudges);
     }
 
-    public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges) {
+    DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges) {
         super(proposalsTallies, amountOfJudges);
     }
 
-    public DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
+    DefaultGradeTally(ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
         super(proposalsTallies, amountOfJudges);
     }
 

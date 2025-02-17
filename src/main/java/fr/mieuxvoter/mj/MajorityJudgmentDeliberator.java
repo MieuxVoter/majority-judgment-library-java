@@ -15,8 +15,7 @@ import java.util.Comparator;
  * use Strings instead of Integers or raw Bits for the score. Improve if you feel like it and can
  * benchmark things.
  *
- * <p>https://en.wikipedia.org/wiki/Majority_judgment
- * https://fr.wikipedia.org/wiki/Jugement_majoritaire
+ * <p><a href="https://en.wikipedia.org/wiki/Majority_judgment">More about Majority Judgment</a>
  */
 public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
@@ -62,9 +61,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
 
         // II. Sort Proposals by score (lexicographical inverse)
-        ProposalResult[] proposalResultsSorted = proposalResults.clone();
-        assert (proposalResultsSorted[0].hashCode()
-                == proposalResults[0].hashCode()); // we need a shallow clone
+        ProposalResult[] proposalResultsSorted = proposalResults.clone(); // MUST be shallow
         Arrays.sort(
                 proposalResultsSorted,
                 new Comparator<ProposalResultInterface>() {
@@ -75,7 +72,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 });
 
         // III. Attribute a rank to each Proposal
-        Integer rank = 1;
+        int rank = 1;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
             Integer actualRank = rank;
@@ -105,20 +102,18 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     }
 
     private boolean isTallyCoherent(TallyInterface tally) {
-        boolean coherent = true;
         for (ProposalTallyInterface proposalTally : tally.getProposalsTallies()) {
             for (BigInteger gradeTally : proposalTally.getTally()) {
-                if (-1 == gradeTally.compareTo(BigInteger.ZERO)) {
-                    coherent = false; // negative tallies are not coherent
+                if (0 > gradeTally.compareTo(BigInteger.ZERO)) {
+                    return false; // negative tallies are not coherent
                 }
             }
         }
 
-        return coherent;
+        return true;
     }
 
     private boolean isTallyBalanced(TallyInterface tally) {
-        boolean balanced = true;
         BigInteger amountOfJudges = BigInteger.ZERO;
         boolean firstProposal = true;
         for (ProposalTallyInterface proposalTally : tally.getProposalsTallies()) {
@@ -127,12 +122,12 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 firstProposal = false;
             } else {
                 if (0 != amountOfJudges.compareTo(proposalTally.getAmountOfJudgments())) {
-                    balanced = false;
+                    return false;
                 }
             }
         }
 
-        return balanced;
+        return true;
     }
 
     /**
@@ -147,10 +142,10 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
      * grade to "best" grade.
      *
      * @param tally             Holds the tallies of each Grade for a single Proposal
-     * @param amountOfJudges
-     * @param favorContestation Use the lower median, for example
-     * @param onlyNumbers       Do not use separation characters, match `^[0-9]+$`
-     * @return the score of the proposal
+     * @param amountOfJudges    Amount of judges participating
+     * @param favorContestation Use the lower median when dealing with an even amount of judgments.
+     * @param onlyNumbers       Do not use separation characters for the score, ie match `^[0-9]+$`
+     * @return the score of the proposal, also known as median gauge.
      */
     private String computeScore(
             ProposalTallyInterface tally,

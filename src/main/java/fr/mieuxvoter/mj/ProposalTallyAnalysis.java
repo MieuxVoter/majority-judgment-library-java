@@ -64,7 +64,9 @@ public class ProposalTallyAnalysis {
         int amountOfGrades = gradesTallies.length;
 
         for (BigInteger gradeTally : gradesTallies) {
-            // assert(0 <= gradeTally);  // Negative tallies are not allowed.
+            if (0 > gradeTally.compareTo(BigInteger.ZERO)) {
+                throw new IllegalArgumentException("Negative tallies are not allowed.");
+            }
             this.totalSize = this.totalSize.add(gradeTally);
         }
 
@@ -109,19 +111,15 @@ public class ProposalTallyAnalysis {
             }
         }
 
-        this.reanalyzeSecondMedianGroup(favorContestation);
-    }
-
-    protected void reanalyzeSecondMedianGroup(Boolean favorContestation) {
         this.secondMedianGroupSize = this.contestationGroupSize.max(this.adhesionGroupSize);
 
-        if (0 < this.adhesionGroupSize.compareTo(this.contestationGroupSize)) {
+        if (0 < this.adhesionGroupSize.compareTo(this.contestationGroupSize)) { // adhesion
             this.secondMedianGrade = this.adhesionGrade;
             this.secondMedianGroupSign = 1;
-        } else if (0 < this.contestationGroupSize.compareTo(this.adhesionGroupSize)) {
+        } else if (0 < this.contestationGroupSize.compareTo(this.adhesionGroupSize)) { // contestation
             this.secondMedianGrade = this.contestationGrade;
             this.secondMedianGroupSign = -1;
-        } else {
+        } else { // equality
             if (favorContestation.equals(Boolean.TRUE)) {
                 this.secondMedianGrade = this.contestationGrade;
                 this.secondMedianGroupSign = -1;

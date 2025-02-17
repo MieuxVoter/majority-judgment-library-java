@@ -3,6 +3,7 @@ package fr.mieuxvoter.mj;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -155,4 +156,17 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSize */ BigInteger.valueOf(3),
                         /* secondMedianGroupSign */ -1));
     }
+
+    @Test
+    @DisplayName("Test failures on negative tallies")
+    void testFailureWithNegativeTallies() throws Throwable {
+        ProposalTallyAnalysis t = new ProposalTallyAnalysis();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                    t.reanalyze(new ProposalTally(new Integer[] {4, 2, -1, 1, 2, 2, 3}))
+        );
+    }
+
 }

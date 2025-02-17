@@ -161,11 +161,12 @@ class ProposalTallyAnalysisTest {
     @DisplayName("Test failures on negative tallies")
     void testFailureWithNegativeTallies() throws Throwable {
         ProposalTallyAnalysis t = new ProposalTallyAnalysis();
+        ProposalTally pt = new ProposalTally(new Integer[] {4, 2, -1, 1, 2, 2, 3});
 
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
-                    t.reanalyze(new ProposalTally(new Integer[] {4, 2, -1, 1, 2, 2, 3}))
+                    t.reanalyze(pt)
         );
     }
 

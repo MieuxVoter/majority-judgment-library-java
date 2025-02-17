@@ -17,14 +17,14 @@ import java.util.Comparator;
  *
  * <p>https://en.wikipedia.org/wiki/Majority_judgment
  * https://fr.wikipedia.org/wiki/Jugement_majoritaire
- *
  */
 public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
     protected boolean favorContestation = true;
     protected boolean numerizeScore = false;
 
-    public MajorityJudgmentDeliberator() {}
+    public MajorityJudgmentDeliberator() {
+    }
 
     public MajorityJudgmentDeliberator(boolean favorContestation) {
         this.favorContestation = favorContestation;
@@ -50,8 +50,9 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
             String score = computeScore(proposalTally, amountOfJudges);
-            ProposalTallyAnalysis analysis =
-                    new ProposalTallyAnalysis(proposalTally, this.favorContestation);
+            ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(
+                    proposalTally, this.favorContestation
+            );
             ProposalResult proposalResult = new ProposalResult();
             proposalResult.setIndex(proposalIndex);
             proposalResult.setScore(score);
@@ -89,6 +90,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
 
         result.setProposalResults(proposalResults);
+        result.setProposalResultsRanked(proposalResultsSorted);
+
         return result;
     }
 
@@ -132,7 +135,9 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return balanced;
     }
 
-    /** @see computeScore() below */
+    /**
+     * @see computeScore() below
+     */
     protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
         return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
     }
@@ -141,10 +146,10 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
      * A higher score means a better rank. Assumes that grades' tallies are provided from "worst"
      * grade to "best" grade.
      *
-     * @param tally Holds the tallies of each Grade for a single Proposal
+     * @param tally             Holds the tallies of each Grade for a single Proposal
      * @param amountOfJudges
      * @param favorContestation Use the lower median, for example
-     * @param onlyNumbers Do not use separation characters, match `^[0-9]+$`
+     * @param onlyNumbers       Do not use separation characters, match `^[0-9]+$`
      * @return the score of the proposal
      */
     protected String computeScore(

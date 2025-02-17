@@ -85,6 +85,10 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals(1, result.getProposalResults()[1].getRank());
         assertEquals(0, result.getProposalResults()[0].getIndex());
         assertEquals(1, result.getProposalResults()[1].getIndex());
+        assertEquals(1, result.getProposalResultsRanked()[0].getRank());
+        assertEquals(2, result.getProposalResultsRanked()[1].getRank());
+        assertEquals(1, result.getProposalResultsRanked()[0].getIndex());
+        assertEquals(0, result.getProposalResultsRanked()[1].getIndex());
     }
 
     @Test

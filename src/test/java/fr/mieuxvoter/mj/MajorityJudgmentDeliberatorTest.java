@@ -20,7 +20,7 @@ class MajorityJudgmentDeliberatorTest {
     @DisplayName("Test majority judgment deliberation from JSON assertions")
     @ParameterizedTest(name = "#{index} {0}")
     @JsonFileSource(resources = "/assertions.json")
-    public void testFromJson(JsonObject datum) throws Throwable {
+    void testFromJson(JsonObject datum) throws Throwable {
         // This test uses the JSON file in test/resources/
         // It also allows testing the various modes of default grades.
 
@@ -68,7 +68,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test the basic demo usage of the README")
-    public void testDemoUsage() throws Throwable {
+    void testDemoUsage() throws Throwable {
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         TallyInterface tally =
                 new Tally(
@@ -93,7 +93,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test the basic demo usage with billions of participants")
-    public void testDemoUsageWithBigNumbers() throws Throwable {
+    void testDemoUsageWithBigNumbers() throws Throwable {
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         TallyInterface tally =
                 new Tally(
@@ -122,7 +122,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test the collect demo usage of the README")
-    public void testDemoUsageCollectedTally() throws Throwable {
+    void testDemoUsageCollectedTally() throws Throwable {
         Integer amountOfProposals = 3;
         Integer amountOfGrades = 4;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -174,7 +174,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test the normalized collect demo usage of the README")
-    public void testDemoUsageNormalizedCollectedTally() throws Throwable {
+    void testDemoUsageNormalizedCollectedTally() throws Throwable {
         Integer amountOfProposals = 4;
         Integer amountOfGrades = 3;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
@@ -215,7 +215,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test with a static default grade (\"worst grade\" == 0)")
-    public void testWithStaticDefaultGrade() throws Throwable {
+    void testWithStaticDefaultGrade() throws Throwable {
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         Long amountOfJudges = 3L;
         Integer defaultGrade = 0;
@@ -240,7 +240,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test static default grade with thousands of proposals and millions of judges")
-    public void testStaticDefaultWithThousandsOfProposals() throws Throwable {
+    void testStaticDefaultWithThousandsOfProposals() throws Throwable {
         int amountOfProposals = 1337;
         Integer amountOfJudges = 60000000;
         Integer defaultGrade = 0;
@@ -285,7 +285,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test with a median default grade")
-    public void testMedianDefaultGrade() throws Throwable {
+    void testMedianDefaultGrade() throws Throwable {
         Integer amountOfJudges = 42;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         TallyInterface tally =
@@ -312,7 +312,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test normalized tallies with thousands of (prime) proposals")
-    public void testNormalizedWithThousandsOfPrimeProposals() throws Throwable {
+    void testNormalizedWithThousandsOfPrimeProposals() throws Throwable {
         // We're using primes to test the upper bounds of our LCM shenanigans.
         // This test takes a long time! (3 seconds)
 
@@ -337,7 +337,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test normalized tallies with thousands of proposals")
-    public void testNormalizedWithThousandsOfProposals() throws Throwable {
+    void testNormalizedWithThousandsOfProposals() throws Throwable {
         // This test is faster than the primes one (0.4 seconds),
         // since primes are the worst-case scenario for our LCM.
 
@@ -361,7 +361,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test favoring adhesion")
-    public void testFavoringAdhesion() throws Exception {
+    void testFavoringAdhesion() throws Exception {
         boolean favorContestation = false;
         Integer amountOfJudges = 4;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator(favorContestation);
@@ -388,7 +388,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Test numeric score")
-    public void testNumericScore() throws Exception {
+    void testNumericScore() throws Exception {
         boolean favorContestation = true;
         boolean numerizeScore = true;
 
@@ -411,7 +411,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Fail on unbalanced tallies")
-    public void testFailureOnUnbalancedTallies() {
+    void testFailureOnUnbalancedTallies() {
         Integer amountOfJudges = 2;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         TallyInterface tally =
@@ -446,7 +446,7 @@ class MajorityJudgmentDeliberatorTest {
 
     @Test
     @DisplayName("Fail on negative tallies")
-    public void testFailureOnNegativeTallies() {
+    void testFailureOnNegativeTallies() {
         Integer amountOfJudges = 2;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         TallyInterface tally =

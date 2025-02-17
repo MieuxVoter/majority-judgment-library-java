@@ -64,12 +64,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         ProposalResult[] proposalResultsSorted = proposalResults.clone(); // MUST be shallow
         Arrays.sort(
                 proposalResultsSorted,
-                new Comparator<ProposalResultInterface>() {
-                    @Override
-                    public int compare(ProposalResultInterface p0, ProposalResultInterface p1) {
-                        return p1.getScore().compareTo(p0.getScore());
-                    }
-                });
+                (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore()));
 
         // III. Attribute a rank to each Proposal
         int rank = 1;
@@ -151,7 +146,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             ProposalTallyInterface tally,
             BigInteger amountOfJudges,
             Boolean favorContestation,
-            Boolean onlyNumbers) {
+            Boolean onlyNumbers
+    ) {
         ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
         int amountOfGrades = tally.getTally().length;
         int digitsForGrade = countDigits(amountOfGrades);

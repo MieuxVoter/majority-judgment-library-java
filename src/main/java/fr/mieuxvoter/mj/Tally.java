@@ -52,10 +52,10 @@ public class Tally implements TallyInterface {
     }
 
     protected void guessAmountOfJudges() {
-        BigInteger amountOfJudges = BigInteger.ZERO;
+        BigInteger guessedAmount = BigInteger.ZERO;
         for (ProposalTallyInterface proposalTally : getProposalsTallies()) {
-            amountOfJudges = proposalTally.getAmountOfJudgments().max(amountOfJudges);
+            guessedAmount = proposalTally.getAmountOfJudgments().max(guessedAmount);
         }
-        setAmountOfJudges(amountOfJudges);
+        setAmountOfJudges(guessedAmount);
     }
 }

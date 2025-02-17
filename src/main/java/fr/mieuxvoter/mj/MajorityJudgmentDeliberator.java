@@ -159,37 +159,39 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
         ProposalTallyInterface currentTally = tally.duplicate();
 
-        String score = "";
+        StringBuilder score = new StringBuilder();
         for (int i = 0; i < amountOfGrades; i++) {
 
             analysis.reanalyze(currentTally, favorContestation);
 
-            if (0 < i && !onlyNumbers) {
-                score += "/";
+            if (0 < i && onlyNumbers.equals(Boolean.FALSE)) {
+                score.append("/");
             }
 
-            score += String.format("%0" + digitsForGrade + "d", analysis.getMedianGrade());
+            score.append(String.format("%0" + digitsForGrade + "d", analysis.getMedianGrade()));
 
-            if (!onlyNumbers) {
-                score += "_";
+            if (onlyNumbers.equals(Boolean.FALSE)) {
+                score.append("_");
             }
 
-            score +=
-                    String.format(
-                            "%0" + digitsForGroup + "d",
-                            // We offset by amountOfJudges to keep a lexicographical order (no
-                            // negatives)
-                            // amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
-                            amountOfJudges.add(
-                                    analysis.getSecondMedianGroupSize()
-                                            .multiply(
-                                                    BigInteger.valueOf(
-                                                            analysis.getSecondMedianGroupSign()))));
+            score.append(String.format(
+                    "%0" + digitsForGroup + "d",
+                    // amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
+                    analysis.getSecondMedianGroupSize()
+                            .multiply(
+                                    BigInteger.valueOf(
+                                            analysis.getSecondMedianGroupSign()
+                                    )
+                            )
+                            // We offset by amountOfJudges to keep a lexicographical order,
+                            // which would be broken by any negative number here.
+                            .add(amountOfJudges)
+            ));
 
             currentTally.moveJudgments(analysis.getMedianGrade(), analysis.getSecondMedianGrade());
         }
 
-        return score;
+        return score.toString();
     }
 
     private int countDigits(int number) {

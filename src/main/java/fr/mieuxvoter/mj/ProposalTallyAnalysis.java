@@ -69,7 +69,7 @@ public class ProposalTallyAnalysis {
         }
 
         int medianOffset = 1;
-        if (!favorContestation) {
+        if (favorContestation.equals(Boolean.FALSE)) {
             medianOffset = 2;
         }
         BigInteger medianCursor = (
@@ -78,7 +78,7 @@ public class ProposalTallyAnalysis {
                         .divide(BigInteger.valueOf(2))
         );
 
-        BigInteger tallyBeforeCursor = BigInteger.ZERO;
+        BigInteger tallyBeforeCursor;
         BigInteger tallyCursor = BigInteger.ZERO;
         boolean foundMedian = false;
         int contestationGrade = 0;
@@ -94,10 +94,11 @@ public class ProposalTallyAnalysis {
                     this.medianGrade = grade;
                     this.contestationGroupSize = tallyBeforeCursor;
                     this.medianGroupSize = gradeTally;
-                    this.adhesionGroupSize =
+                    this.adhesionGroupSize = (
                             this.totalSize
                                     .subtract(this.contestationGroupSize)
-                                    .subtract(this.medianGroupSize);
+                                    .subtract(this.medianGroupSize)
+                    );
                 } else {
                     if (0 < gradeTally.compareTo(BigInteger.ZERO)) { // 0 < gradeTally
                         contestationGrade = grade;
@@ -126,7 +127,7 @@ public class ProposalTallyAnalysis {
             this.secondMedianGrade = this.contestationGrade;
             this.secondMedianGroupSign = -1;
         } else {
-            if (favorContestation) {
+            if (favorContestation.equals(Boolean.TRUE)) {
                 this.secondMedianGrade = this.contestationGrade;
                 this.secondMedianGroupSign = -1;
             } else {

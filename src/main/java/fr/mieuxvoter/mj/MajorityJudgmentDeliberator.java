@@ -164,14 +164,17 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 score.append("/");
             }
 
-            score.append(String.format("%0" + digitsForGrade + "d", analysis.getMedianGrade()));
+            score.append(String.format(
+                    String.format("%%0%dd", digitsForGrade),
+                    analysis.getMedianGrade()
+            ));
 
             if (onlyNumbers.equals(Boolean.FALSE)) {
                 score.append("_");
             }
 
             score.append(String.format(
-                    "%0" + digitsForGroup + "d",
+                    String.format("%%0%dd", digitsForGroup),
                     // amountOfJudges + secondMedianGroupSize * secondMedianGroupSign
                     analysis.getSecondMedianGroupSize()
                             .multiply(

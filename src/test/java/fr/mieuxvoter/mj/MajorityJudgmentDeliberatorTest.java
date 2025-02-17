@@ -288,7 +288,7 @@ class MajorityJudgmentDeliberatorTest {
     void testMedianDefaultGrade() throws Throwable {
         Integer amountOfJudges = 42;
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-        TallyInterface tally =
+        TallyInterface tally = (
                 new MedianDefaultTally(
                         new ProposalTallyInterface[] {
                             new ProposalTally(new Integer[] {0, 0, 1}),
@@ -297,7 +297,9 @@ class MajorityJudgmentDeliberatorTest {
                             new ProposalTally(new Integer[] {1, 0, 1}),
                             new ProposalTally(new Integer[] {1, 0, 0}),
                         },
-                        amountOfJudges);
+                        amountOfJudges
+                )
+        );
 
         ResultInterface result = mj.deliberate(tally);
 

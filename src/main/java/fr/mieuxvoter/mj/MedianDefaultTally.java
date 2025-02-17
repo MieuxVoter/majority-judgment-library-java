@@ -14,17 +14,25 @@ public class MedianDefaultTally extends DefaultGradeTally implements TallyInterf
     }
 
     public MedianDefaultTally(
-            ProposalTallyInterface[] proposalsTallies, BigInteger amountOfJudges) {
+            ProposalTallyInterface[] proposalsTallies,
+            BigInteger amountOfJudges
+    ) {
         super(proposalsTallies, amountOfJudges);
         fillWithDefaultGrade();
     }
 
-    public MedianDefaultTally(ProposalTallyInterface[] proposalsTallies, Long amountOfJudges) {
+    public MedianDefaultTally(
+            ProposalTallyInterface[] proposalsTallies,
+            Long amountOfJudges
+    ) {
         super(proposalsTallies, amountOfJudges);
         fillWithDefaultGrade();
     }
 
-    public MedianDefaultTally(ProposalTallyInterface[] proposalsTallies, Integer amountOfJudges) {
+    public MedianDefaultTally(
+            ProposalTallyInterface[] proposalsTallies,
+            Integer amountOfJudges
+    ) {
         super(proposalsTallies, amountOfJudges);
         fillWithDefaultGrade();
     }

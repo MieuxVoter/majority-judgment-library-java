@@ -5,20 +5,19 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * Deliberate using Majority Judgment.
+ * Deliberate (rank proposals) using Majority Judgment.
  *
  * <p>Sorts Proposals by their median Grade. When two proposals share the same median Grade, give
  * reason to the largest group of people that did not give the median Grade.
  *
  * <p>This algorithm is score-based, for performance (and possible parallelization). Each Proposal
- * gets a score, higher (lexicographically) is "better" (depends of the meaning of the Grades). We
+ * gets a score, higher (lexicographically) is "better" (depends on the meaning of the Grades). We
  * use Strings instead of Integers or raw Bits for the score. Improve if you feel like it and can
  * benchmark things.
  *
  * <p>https://en.wikipedia.org/wiki/Majority_judgment
  * https://fr.wikipedia.org/wiki/Jugement_majoritaire
  *
- * <p>Should this class be `final`?
  */
 public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
@@ -54,6 +53,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             ProposalTallyAnalysis analysis =
                     new ProposalTallyAnalysis(proposalTally, this.favorContestation);
             ProposalResult proposalResult = new ProposalResult();
+            proposalResult.setIndex(proposalIndex);
             proposalResult.setScore(score);
             proposalResult.setAnalysis(analysis);
             // proposalResult.setRank(???); // rank is computed below, AFTER the score pass

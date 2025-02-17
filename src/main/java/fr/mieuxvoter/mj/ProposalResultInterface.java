@@ -3,6 +3,13 @@ package fr.mieuxvoter.mj;
 public interface ProposalResultInterface {
 
     /**
+     * Index of the proposal, as submitted in the tally.
+     * Each proposal has a unique index, and indices start at 0.
+     * This property is especially useful when reading Result.getProposalResultsRanked().
+     */
+    public Integer getIndex();
+
+    /**
      * Rank starts at 1 ("best" proposal), and goes upwards. Multiple Proposals may receive the same
      * rank, in the extreme case where they received the exact same judgments, or the same judgment
      * repartition in normalized tallies.

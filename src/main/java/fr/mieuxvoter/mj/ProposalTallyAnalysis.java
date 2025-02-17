@@ -81,8 +81,6 @@ public class ProposalTallyAnalysis {
         BigInteger tallyBeforeCursor;
         BigInteger tallyCursor = BigInteger.ZERO;
         boolean foundMedian = false;
-        int contestationGrade = 0;
-        int adhesionGrade = 0;
         for (int grade = 0; grade < amountOfGrades; grade++) {
             BigInteger gradeTally = gradesTallies[grade];
             tallyBeforeCursor = tallyCursor;
@@ -101,18 +99,15 @@ public class ProposalTallyAnalysis {
                     );
                 } else {
                     if (0 < gradeTally.compareTo(BigInteger.ZERO)) { // 0 < gradeTally
-                        contestationGrade = grade;
+                        this.contestationGrade = grade;
                     }
                 }
             } else {
-                if (0 < gradeTally.compareTo(BigInteger.ZERO) && 0 == adhesionGrade) {
-                    adhesionGrade = grade;
+                if (0 < gradeTally.compareTo(BigInteger.ZERO) && 0 == this.adhesionGrade) {
+                    this.adhesionGrade = grade;
                 }
             }
         }
-
-        this.contestationGrade = contestationGrade;
-        this.adhesionGrade = adhesionGrade;
 
         this.reanalyzeSecondMedianGroup(favorContestation);
     }

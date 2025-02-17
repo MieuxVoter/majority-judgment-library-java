@@ -1,6 +1,7 @@
 package fr.mieuxvoter.mj;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class CollectedTally implements TallyInterface {
 
@@ -17,9 +18,7 @@ public class CollectedTally implements TallyInterface {
         for (int i = 0; i < amountOfProposals; i++) {
             ProposalTally proposalTally = new ProposalTally();
             Integer[] tally = new Integer[amountOfGrades];
-            for (int j = 0; j < amountOfGrades; j++) {
-                tally[j] = 0;
-            }
+            Arrays.fill(tally, 0);
             proposalTally.setTally(tally);
             proposalsTallies[i] = proposalTally;
         }
@@ -61,10 +60,18 @@ public class CollectedTally implements TallyInterface {
     }
 
     public void collect(Integer proposal, Integer grade) {
-        assert (0 <= proposal);
-        assert (amountOfProposals > proposal);
-        assert (0 <= grade);
-        assert (amountOfGrades > grade);
+        if (0 > proposal) {
+            throw new IllegalArgumentException("Proposal index must be ≥ zero.");
+        }
+        if (amountOfProposals <= proposal) {
+            throw new IllegalArgumentException("Proposal index is too high.");
+        }
+        if (0 > grade) {
+            throw new IllegalArgumentException("Grade index must be ≥ zero.");
+        }
+        if (amountOfGrades <= grade) {
+            throw new IllegalArgumentException("Grade index is too high.");
+        }
 
         BigInteger[] tally = proposalsTallies[proposal].getTally();
         tally[grade] = tally[grade].add(BigInteger.ONE);

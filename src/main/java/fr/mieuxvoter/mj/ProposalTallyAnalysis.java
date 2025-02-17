@@ -59,20 +59,16 @@ public class ProposalTallyAnalysis {
         this.contestationGroupSize = BigInteger.ZERO;
         this.adhesionGrade = 0;
         this.adhesionGroupSize = BigInteger.ZERO;
-        this.secondMedianGrade = 0;
-        this.secondMedianGroupSize = BigInteger.ZERO;
-        this.secondMedianGroupSign = 0;
 
         BigInteger[] gradesTallies = this.tally.getTally();
         int amountOfGrades = gradesTallies.length;
 
-        for (int grade = 0; grade < amountOfGrades; grade++) {
-            BigInteger gradeTally = gradesTallies[grade];
+        for (BigInteger gradeTally : gradesTallies) {
             // assert(0 <= gradeTally);  // Negative tallies are not allowed.
             this.totalSize = this.totalSize.add(gradeTally);
         }
 
-        Integer medianOffset = 1;
+        int medianOffset = 1;
         if (!favorContestation) {
             medianOffset = 2;
         }
@@ -81,13 +77,12 @@ public class ProposalTallyAnalysis {
                         .add(BigInteger.valueOf(medianOffset))
                         .divide(BigInteger.valueOf(2))
         );
-        //Long medianCursor = (long) Math.floor((this.totalSize + medianOffset) / 2.0);
 
         BigInteger tallyBeforeCursor = BigInteger.ZERO;
         BigInteger tallyCursor = BigInteger.ZERO;
-        Boolean foundMedian = false;
-        Integer contestationGrade = 0;
-        Integer adhesionGrade = 0;
+        boolean foundMedian = false;
+        int contestationGrade = 0;
+        int adhesionGrade = 0;
         for (int grade = 0; grade < amountOfGrades; grade++) {
             BigInteger gradeTally = gradesTallies[grade];
             tallyBeforeCursor = tallyCursor;
@@ -117,8 +112,13 @@ public class ProposalTallyAnalysis {
 
         this.contestationGrade = contestationGrade;
         this.adhesionGrade = adhesionGrade;
+
+        this.reanalyzeSecondMedianGroup(favorContestation);
+    }
+
+    protected void reanalyzeSecondMedianGroup(Boolean favorContestation) {
         this.secondMedianGroupSize = this.contestationGroupSize.max(this.adhesionGroupSize);
-        this.secondMedianGroupSign = 0;
+
         if (0 < this.adhesionGroupSize.compareTo(this.contestationGroupSize)) {
             this.secondMedianGrade = this.adhesionGrade;
             this.secondMedianGroupSign = 1;
@@ -134,6 +134,7 @@ public class ProposalTallyAnalysis {
                 this.secondMedianGroupSign = 1;
             }
         }
+
         if (0 == this.secondMedianGroupSize.compareTo(BigInteger.ZERO)) {
             this.secondMedianGroupSign = 0;
         }

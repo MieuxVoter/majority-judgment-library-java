@@ -20,8 +20,8 @@ import java.util.Comparator;
  */
 public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
-    protected boolean favorContestation = true;
-    protected boolean numerizeScore = false;
+    private boolean favorContestation = true;
+    private boolean numerizeScore = false;
 
     public MajorityJudgmentDeliberator() {
     }
@@ -95,7 +95,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return result;
     }
 
-    protected void checkTally(TallyInterface tally) throws UnbalancedTallyException {
+    private void checkTally(TallyInterface tally) throws UnbalancedTallyException {
         if (!isTallyCoherent(tally)) {
             throw new IncoherentTallyException();
         }
@@ -104,7 +104,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
     }
 
-    protected boolean isTallyCoherent(TallyInterface tally) {
+    private boolean isTallyCoherent(TallyInterface tally) {
         boolean coherent = true;
         for (ProposalTallyInterface proposalTally : tally.getProposalsTallies()) {
             for (BigInteger gradeTally : proposalTally.getTally()) {
@@ -117,7 +117,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return coherent;
     }
 
-    protected boolean isTallyBalanced(TallyInterface tally) {
+    private boolean isTallyBalanced(TallyInterface tally) {
         boolean balanced = true;
         BigInteger amountOfJudges = BigInteger.ZERO;
         boolean firstProposal = true;
@@ -138,7 +138,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     /**
      * @see computeScore() below
      */
-    protected String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
+    private String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
         return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
     }
 
@@ -152,7 +152,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
      * @param onlyNumbers       Do not use separation characters, match `^[0-9]+$`
      * @return the score of the proposal
      */
-    protected String computeScore(
+    private String computeScore(
             ProposalTallyInterface tally,
             BigInteger amountOfJudges,
             Boolean favorContestation,
@@ -197,11 +197,11 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return score;
     }
 
-    protected int countDigits(int number) {
+    private int countDigits(int number) {
         return ("" + number).length();
     }
 
-    protected int countDigits(BigInteger number) {
+    private int countDigits(BigInteger number) {
         return ("" + number).length();
     }
 }

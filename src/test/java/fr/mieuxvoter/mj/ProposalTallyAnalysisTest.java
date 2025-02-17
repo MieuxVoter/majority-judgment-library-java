@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.math.BigInteger;
 import java.util.stream.Stream;
 
-// CTRL+F11 in Eclipse to run
+// CTRL+F11 in Eclipse to run.
 
 class ProposalTallyAnalysisTest {
 
@@ -18,7 +18,7 @@ class ProposalTallyAnalysisTest {
     @ParameterizedTest(name = "#{index} {0} ; tally = {1}")
     @MethodSource("testProvider")
     void test(
-            String testName,
+            String testName, // actually used by ParameterizedTest annotation
             Integer[] rawTally,
             Integer medianGrade,
             BigInteger medianGroupSize,
@@ -35,14 +35,25 @@ class ProposalTallyAnalysisTest {
         assertEquals(medianGroupSize, pta.getMedianGroupSize(), "Median Group Size");
         assertEquals(contestationGrade, pta.getContestationGrade(), "Contestation Grade");
         assertEquals(
-                contestationGroupSize, pta.getContestationGroupSize(), "Contestation Group Size");
+                contestationGroupSize, pta.getContestationGroupSize(),
+                "Contestation Group Size"
+        );
         assertEquals(adhesionGrade, pta.getAdhesionGrade(), "Adhesion Grade");
         assertEquals(adhesionGroupSize, pta.getAdhesionGroupSize(), "Adhesion Group Size");
         assertEquals(secondMedianGrade, pta.getSecondMedianGrade(), "Second Median Grade");
         assertEquals(
-                secondMedianGroupSize, pta.getSecondMedianGroupSize(), "Second Median Group Size");
+                secondMedianGroupSize, pta.getSecondMedianGroupSize(),
+                "Second Median Group Size"
+        );
         assertEquals(
-                secondMedianGroupSign, pta.getSecondMedianGroupSign(), "Second Median Group Sign");
+                secondMedianGroupSign, pta.getSecondMedianGroupSign(),
+                "Second Median Group Sign"
+        );
+        assertEquals(
+                medianGroupSize.add(adhesionGroupSize).add(contestationGroupSize),
+                pta.getTotalSize(),
+                "Total size"
+        );
     }
 
     protected static Stream<Arguments> testProvider() {

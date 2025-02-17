@@ -3,7 +3,8 @@ package fr.mieuxvoter.mj;
 import java.math.BigInteger;
 
 /**
- * Collect useful data on a proposal tally. Does NOT compute the rank, but provides all we need.
+ * Collect useful data on a proposal's tally.
+ * Does NOT compute the rank, but provides everything we need to do so.
  *
  * <p>This uses BigInteger because in a normalization scenario we use the smallest common multiple
  * of the amounts of judges of proposals. It makes the code harder to read and understand, but it
@@ -32,10 +33,10 @@ public class ProposalTallyAnalysis {
 
     protected BigInteger secondMedianGroupSize = BigInteger.ZERO; // either contestation or adhesion
 
-    protected Integer secondMedianGroupSign =
-            0; // -1 for contestation, +1 for adhesion, 0 for empty group size
+    protected Integer secondMedianGroupSign = 0; // -1 for contestation, +1 for adhesion, 0 for empty group size
 
-    public ProposalTallyAnalysis() {}
+    public ProposalTallyAnalysis() {
+    }
 
     public ProposalTallyAnalysis(ProposalTallyInterface tally) {
         reanalyze(tally);
@@ -75,9 +76,12 @@ public class ProposalTallyAnalysis {
         if (!favorContestation) {
             medianOffset = 2;
         }
-        BigInteger medianCursor =
-                this.totalSize.add(BigInteger.valueOf(medianOffset)).divide(BigInteger.valueOf(2));
-        //		Long medianCursor = (long) Math.floor((this.totalSize + medianOffset) / 2.0);
+        BigInteger medianCursor = (
+                this.totalSize
+                        .add(BigInteger.valueOf(medianOffset))
+                        .divide(BigInteger.valueOf(2))
+        );
+        //Long medianCursor = (long) Math.floor((this.totalSize + medianOffset) / 2.0);
 
         BigInteger tallyBeforeCursor = BigInteger.ZERO;
         BigInteger tallyCursor = BigInteger.ZERO;
@@ -100,12 +104,12 @@ public class ProposalTallyAnalysis {
                                     .subtract(this.contestationGroupSize)
                                     .subtract(this.medianGroupSize);
                 } else {
-                    if (1 == gradeTally.compareTo(BigInteger.ZERO)) { // 0 < gradeTally
+                    if (0 < gradeTally.compareTo(BigInteger.ZERO)) { // 0 < gradeTally
                         contestationGrade = grade;
                     }
                 }
             } else {
-                if (1 == gradeTally.compareTo(BigInteger.ZERO) && 0 == adhesionGrade) {
+                if (0 < gradeTally.compareTo(BigInteger.ZERO) && 0 == adhesionGrade) {
                     adhesionGrade = grade;
                 }
             }
@@ -115,12 +119,10 @@ public class ProposalTallyAnalysis {
         this.adhesionGrade = adhesionGrade;
         this.secondMedianGroupSize = this.contestationGroupSize.max(this.adhesionGroupSize);
         this.secondMedianGroupSign = 0;
-        //		if (this.contestationGroupSize < this.adhesionGroupSize) {
-        if (1 == this.adhesionGroupSize.compareTo(this.contestationGroupSize)) {
+        if (0 < this.adhesionGroupSize.compareTo(this.contestationGroupSize)) {
             this.secondMedianGrade = this.adhesionGrade;
             this.secondMedianGroupSign = 1;
-            //		} else if (this.contestationGroupSize > this.adhesionGroupSize) {
-        } else if (1 == this.contestationGroupSize.compareTo(this.adhesionGroupSize)) {
+        } else if (0 < this.contestationGroupSize.compareTo(this.adhesionGroupSize)) {
             this.secondMedianGrade = this.contestationGrade;
             this.secondMedianGroupSign = -1;
         } else {

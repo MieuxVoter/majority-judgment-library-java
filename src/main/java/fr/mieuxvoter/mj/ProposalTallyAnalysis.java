@@ -1,6 +1,7 @@
 package fr.mieuxvoter.mj;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * Collect useful data on a proposal's tally.
@@ -144,42 +145,44 @@ public class ProposalTallyAnalysis {
             ProposalTallyInterface tally,
             Boolean favorContestation
     ) {
-        int amountOfGrades = tally.getTally().length;
-
-        ParticipantGroup[] resolution = new ParticipantGroup[amountOfGrades];
-
+        ArrayList<ParticipantGroup> resolutionList = new ArrayList<>();
         ProposalTallyInterface currentTally = tally.duplicate();
         ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
 
         analysis.reanalyze(currentTally, favorContestation);
-        resolution[0] = new ParticipantGroup(
-                analysis.medianGroupSize,
-                analysis.medianGrade,
-                ParticipantGroup.Type.Median
+        resolutionList.add(
+                new ParticipantGroup(
+                        analysis.medianGroupSize,
+                        analysis.medianGrade,
+                        ParticipantGroup.Type.Median
+                )
         );
 
+        int amountOfGrades = tally.getTally().length;
         for (int cursor = 1; cursor < amountOfGrades; cursor++) {
             analysis.reanalyze(currentTally, favorContestation);
 
             ParticipantGroup.Type type = ParticipantGroup.Type.Median;
             if (analysis.secondMedianGroupSign > 0) {
-                type =  ParticipantGroup.Type.Adhesion;
+                type = ParticipantGroup.Type.Adhesion;
             } else if (analysis.secondMedianGroupSign < 0) {
-                type =  ParticipantGroup.Type.Contestation;
+                type = ParticipantGroup.Type.Contestation;
             }
 
-            if (type != ParticipantGroup.Type.Median) {
-                resolution[cursor] = new ParticipantGroup(
-                        analysis.secondMedianGroupSize,
-                        analysis.secondMedianGrade,
-                        type
+            if (type != ParticipantGroup.Type.Median) { // ie. secondMedianGroupSize != 0
+                resolutionList.add(
+                        new ParticipantGroup(
+                                analysis.secondMedianGroupSize,
+                                analysis.secondMedianGrade,
+                                type
+                        )
                 );
             }
 
             currentTally.moveJudgments(analysis.getMedianGrade(), analysis.getSecondMedianGrade());
         }
 
-        return resolution;
+        return resolutionList.toArray(new ParticipantGroup[0]);
     }
 
     public BigInteger getTotalSize() {

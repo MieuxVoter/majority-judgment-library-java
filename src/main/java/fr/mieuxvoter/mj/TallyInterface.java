@@ -4,9 +4,9 @@ import java.math.BigInteger;
 
 public interface TallyInterface {
 
-    public ProposalTallyInterface[] getProposalsTallies();
+    ProposalTallyInterface[] getProposalsTallies();
 
-    public BigInteger getAmountOfJudges();
+    BigInteger getAmountOfJudges();
 
-    public Integer getAmountOfProposals();
+    Integer getAmountOfProposals();
 }

@@ -19,7 +19,8 @@ class ProposalTallyAnalysisTest {
     @ParameterizedTest(name = "#{index} {0} ; tally = {1}")
     @MethodSource("testProvider")
     void test(
-            String testName, // actually used by ParameterizedTest annotation
+            @SuppressWarnings("unused") // actually used by ParameterizedTest annotation
+            String testName,
             Integer[] rawTally,
             Integer medianGrade,
             BigInteger medianGroupSize,
@@ -157,9 +158,51 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ -1));
     }
 
+
+    @Test
+    @DisplayName("Test the resolution analysis of a proposal tally")
+    void testResolution() {
+        ProposalTally tally = new ProposalTally(new Integer[] {4, 2, 1, 1, 2, 2, 3});
+        ProposalTallyAnalysis pta = new ProposalTallyAnalysis(tally);
+
+        ParticipantGroup[] actualGroups = pta.computeResolution(tally);
+        ParticipantGroup[] expectedGroups = new ParticipantGroup[] {
+                new ParticipantGroup(BigInteger.valueOf(1), 3, ParticipantGroup.Type.Median),
+                new ParticipantGroup(BigInteger.valueOf(7), 2, ParticipantGroup.Type.Contestation),
+                new ParticipantGroup(BigInteger.valueOf(7), 4, ParticipantGroup.Type.Adhesion),
+                new ParticipantGroup(BigInteger.valueOf(6), 1, ParticipantGroup.Type.Contestation),
+                new ParticipantGroup(BigInteger.valueOf(5), 5, ParticipantGroup.Type.Adhesion),
+                new ParticipantGroup(BigInteger.valueOf(4), 0, ParticipantGroup.Type.Contestation),
+                new ParticipantGroup(BigInteger.valueOf(3), 6, ParticipantGroup.Type.Adhesion),
+        };
+
+        assertEquals(expectedGroups.length, actualGroups.length, "Same length");
+
+        int i = 0;
+        for (ParticipantGroup expectedP: expectedGroups) {
+            ParticipantGroup actualP = actualGroups[i];
+            assertEquals(
+                    expectedP.getSize(),
+                    actualP.getSize(),
+                    "Group sizes should be the same for value at " + i
+            );
+            assertEquals(
+                    expectedP.getGrade(),
+                    actualP.getGrade(),
+                    "Group grades should be the same for value at " + i
+            );
+            assertEquals(
+                    expectedP.getType(),
+                    actualP.getType(),
+                    "Group types should be the same for value at " + i
+            );
+            i++;
+        }
+    }
+
     @Test
     @DisplayName("Test failures on negative tallies")
-    void testFailureWithNegativeTallies() throws Throwable {
+    void testFailureWithNegativeTallies() {
         ProposalTallyAnalysis t = new ProposalTallyAnalysis();
         ProposalTally pt = new ProposalTally(new Integer[] {4, 2, -1, 1, 2, 2, 3});
 

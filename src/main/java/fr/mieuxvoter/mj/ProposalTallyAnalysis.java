@@ -134,6 +134,54 @@ public class ProposalTallyAnalysis {
         }
     }
 
+    public ParticipantGroup[] computeResolution(
+            ProposalTallyInterface tally
+    ) {
+        return computeResolution(tally, true);
+    }
+
+    public ParticipantGroup[] computeResolution(
+            ProposalTallyInterface tally,
+            Boolean favorContestation
+    ) {
+        int amountOfGrades = tally.getTally().length;
+
+        ParticipantGroup[] resolution = new ParticipantGroup[amountOfGrades];
+
+        ProposalTallyInterface currentTally = tally.duplicate();
+        ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
+
+        analysis.reanalyze(currentTally, favorContestation);
+        resolution[0] = new ParticipantGroup(
+                analysis.medianGroupSize,
+                analysis.medianGrade,
+                ParticipantGroup.Type.Median
+        );
+
+        for (int cursor = 1; cursor < amountOfGrades; cursor++) {
+            analysis.reanalyze(currentTally, favorContestation);
+
+            ParticipantGroup.Type type = ParticipantGroup.Type.Median;
+            if (analysis.secondMedianGroupSign > 0) {
+                type =  ParticipantGroup.Type.Adhesion;
+            } else if (analysis.secondMedianGroupSign < 0) {
+                type =  ParticipantGroup.Type.Contestation;
+            }
+
+            if (type != ParticipantGroup.Type.Median) {
+                resolution[cursor] = new ParticipantGroup(
+                        analysis.secondMedianGroupSize,
+                        analysis.secondMedianGrade,
+                        type
+                );
+            }
+
+            currentTally.moveJudgments(analysis.getMedianGrade(), analysis.getSecondMedianGrade());
+        }
+
+        return resolution;
+    }
+
     public BigInteger getTotalSize() {
         return totalSize;
     }

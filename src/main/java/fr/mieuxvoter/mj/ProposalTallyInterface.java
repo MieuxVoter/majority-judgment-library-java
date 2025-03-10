@@ -12,18 +12,18 @@ public interface ProposalTallyInterface {
      * The tallies of each Grade, that is the amount of judgments received for each Grade by the
      * Proposal, from "worst" ("most conservative") Grade to "best" Grade.
      */
-    public BigInteger[] getTally();
+    BigInteger[] getTally();
 
     /**
      * Should be the sum of getTally()
      *
      * @return The total amount of judgments received by this proposal.
      */
-    public BigInteger getAmountOfJudgments();
+    BigInteger getAmountOfJudgments();
 
     /** Homemade factory to skip the clone() shenanigans. Used by the score calculus. */
-    public ProposalTallyInterface duplicate();
+    ProposalTallyInterface duplicate();
 
-    /** Move judgments that were fromGrade into intoGrade. Used by the score calculus. */
-    public void moveJudgments(Integer fromGrade, Integer intoGrade);
+    /** Move all judgments that were fromGrade into intoGrade. Used by the score calculus. */
+    void moveJudgments(Integer fromGrade, Integer intoGrade);
 }

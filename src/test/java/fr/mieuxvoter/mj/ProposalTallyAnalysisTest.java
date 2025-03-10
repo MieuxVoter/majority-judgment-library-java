@@ -2,6 +2,7 @@ package fr.mieuxvoter.mj;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import fr.mieuxvoter.mj.ParticipantGroup.Type;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,8 @@ class ProposalTallyAnalysisTest {
     @ParameterizedTest(name = "#{index} {0} ; tally = {1}")
     @MethodSource("testProvider")
     void test(
-            String testName, // actually used by ParameterizedTest annotation
+            @SuppressWarnings("unused") // actually used by ParameterizedTest annotation
+            String testName,
             Integer[] rawTally,
             Integer medianGrade,
             BigInteger medianGroupSize,
@@ -61,7 +63,7 @@ class ProposalTallyAnalysisTest {
         return Stream.of(
                 Arguments.of(
                         /* name */ "Very empty tallies yield zeroes",
-                        /* tally */ new Integer[] {0},
+                        /* tally */ new Integer[]{0},
                         /* medianGrade */ 0,
                         /* medianGroupSize */ BigInteger.ZERO,
                         /* contestationGrade */ 0,
@@ -73,7 +75,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ 0),
                 Arguments.of(
                         /* name */ "Empty tallies yield zeroes",
-                        /* tally */ new Integer[] {0, 0, 0, 0},
+                        /* tally */ new Integer[]{0, 0, 0, 0},
                         /* medianGrade */ 0,
                         /* medianGroupSize */ BigInteger.ZERO,
                         /* contestationGrade */ 0,
@@ -85,7 +87,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ 0),
                 Arguments.of(
                         /* name */ "Absurd tally of 1 Grade",
-                        /* tally */ new Integer[] {7},
+                        /* tally */ new Integer[]{7},
                         /* medianGrade */ 0,
                         /* medianGroupSize */ BigInteger.valueOf(7),
                         /* contestationGrade */ 0,
@@ -97,7 +99,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ 0),
                 Arguments.of(
                         /* name */ "Approbation",
-                        /* tally */ new Integer[] {31, 72},
+                        /* tally */ new Integer[]{31, 72},
                         /* medianGrade */ 1,
                         /* medianGroupSize */ BigInteger.valueOf(72),
                         /* contestationGrade */ 0,
@@ -109,7 +111,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ -1),
                 Arguments.of(
                         /* name */ "Equality favors contestation",
-                        /* tally */ new Integer[] {42, 42},
+                        /* tally */ new Integer[]{42, 42},
                         /* medianGrade */ 0,
                         /* medianGroupSize */ BigInteger.valueOf(42),
                         /* contestationGrade */ 0,
@@ -121,7 +123,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ 1),
                 Arguments.of(
                         /* name */ "Example with seven grades",
-                        /* tally */ new Integer[] {4, 2, 0, 1, 2, 2, 3},
+                        /* tally */ new Integer[]{4, 2, 0, 1, 2, 2, 3},
                         /* medianGrade */ 3,
                         /* medianGroupSize */ BigInteger.valueOf(1),
                         /* contestationGrade */ 1,
@@ -133,7 +135,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ 1),
                 Arguments.of(
                         /* name */ "Works even if multiple grades are at zero",
-                        /* tally */ new Integer[] {4, 0, 0, 1, 0, 0, 4},
+                        /* tally */ new Integer[]{4, 0, 0, 1, 0, 0, 4},
                         /* medianGrade */ 3,
                         /* medianGroupSize */ BigInteger.valueOf(1),
                         /* contestationGrade */ 0,
@@ -145,7 +147,7 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ -1),
                 Arguments.of(
                         /* name */ "Weird tally",
-                        /* tally */ new Integer[] {1, 1, 1, 1, 1, 1, 1},
+                        /* tally */ new Integer[]{1, 1, 1, 1, 1, 1, 1},
                         /* medianGrade */ 3,
                         /* medianGroupSize */ BigInteger.valueOf(1),
                         /* contestationGrade */ 2,
@@ -157,16 +159,98 @@ class ProposalTallyAnalysisTest {
                         /* secondMedianGroupSign */ -1));
     }
 
+
+    @DisplayName("Test the resolution analysis of a proposal tally")
+    @ParameterizedTest(name = "#{index} {0} ; tally = {1}")
+    @MethodSource("testResolutionProvider")
+    void testResolution(
+            @SuppressWarnings("unused") // actually used by ParameterizedTest annotation
+            String testName,
+            Integer[] rawTally,
+            ParticipantGroup[] expectedGroups
+    ) {
+        ProposalTally tally = new ProposalTally(rawTally);
+        ProposalTallyAnalysis pta = new ProposalTallyAnalysis(tally);
+
+        ParticipantGroup[] actualGroups = pta.computeResolution(tally);
+
+        assertEquals(expectedGroups.length, actualGroups.length, "Same length");
+
+        int i = 0;
+        for (ParticipantGroup expectedP : expectedGroups) {
+            ParticipantGroup actualP = actualGroups[i];
+
+            if (expectedP == null) {
+                assertNull(actualP);
+                continue;
+            }
+
+            assertEquals(
+                    expectedP.getSize(),
+                    actualP.getSize(),
+                    "Group sizes should be the same for value at " + i
+            );
+            assertEquals(
+                    expectedP.getGrade(),
+                    actualP.getGrade(),
+                    "Group grades should be the same for value at " + i
+            );
+            assertEquals(
+                    expectedP.getType(),
+                    actualP.getType(),
+                    "Group types should be the same for value at " + i
+            );
+            i++;
+        }
+    }
+
+
+    protected static Stream<Arguments> testResolutionProvider() {
+        return Stream.of(
+                Arguments.of(
+                        /* name */ "Basic full example",
+                        /* tally */ new Integer[]{4, 2, 1, 1, 2, 2, 3},
+                        /* expectedGroups */ new ParticipantGroup[]{
+                                new ParticipantGroup(BigInteger.valueOf(1), 3, Type.Median),
+                                new ParticipantGroup(BigInteger.valueOf(7), 2, Type.Contestation),
+                                new ParticipantGroup(BigInteger.valueOf(7), 4, Type.Adhesion),
+                                new ParticipantGroup(BigInteger.valueOf(6), 1, Type.Contestation),
+                                new ParticipantGroup(BigInteger.valueOf(5), 5, Type.Adhesion),
+                                new ParticipantGroup(BigInteger.valueOf(4), 0, Type.Contestation),
+                                new ParticipantGroup(BigInteger.valueOf(3), 6, Type.Adhesion),
+                        }),
+                Arguments.of(
+                        /* name */ "One grade has no judgments",
+                        /* tally */ new Integer[]{4, 2, 1, 1, 0, 2, 3},
+                        /* expectedGroups */ new ParticipantGroup[]{
+                                new ParticipantGroup(BigInteger.valueOf(1), 2, Type.Median),
+                                new ParticipantGroup(BigInteger.valueOf(6), 1, Type.Contestation),
+                                new ParticipantGroup(BigInteger.valueOf(6), 3, Type.Adhesion),
+                                new ParticipantGroup(BigInteger.valueOf(5), 5, Type.Adhesion),
+                                new ParticipantGroup(BigInteger.valueOf(4), 0, Type.Contestation),
+                                new ParticipantGroup(BigInteger.valueOf(3), 6, Type.Adhesion),
+                        }),
+                Arguments.of(
+                        /* name */ "Many grades have no judgments",
+                        /* tally */ new Integer[]{4, 0, 0, 0, 0, 0, 5},
+                        /* expectedGroups */ new ParticipantGroup[]{
+                                new ParticipantGroup(BigInteger.valueOf(5), 6, Type.Median),
+                                new ParticipantGroup(BigInteger.valueOf(4), 0, Type.Contestation),
+                        })
+        );
+    }
+
+
     @Test
     @DisplayName("Test failures on negative tallies")
-    void testFailureWithNegativeTallies() throws Throwable {
+    void testFailureWithNegativeTallies() {
         ProposalTallyAnalysis t = new ProposalTallyAnalysis();
-        ProposalTally pt = new ProposalTally(new Integer[] {4, 2, -1, 1, 2, 2, 3});
+        ProposalTally pt = new ProposalTally(new Integer[]{4, 2, -1, 1, 2, 2, 3});
 
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
-                    t.reanalyze(pt)
+                        t.reanalyze(pt)
         );
     }
 

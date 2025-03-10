@@ -4,7 +4,7 @@ package fr.mieuxvoter.mj;
  * Raised when the provided tally does not hold the same amount of judgments for each proposal, and
  * normalization is required.
  */
-class UnbalancedTallyException extends InvalidTallyException {
+public class UnbalancedTallyException extends InvalidTallyException {
 
     private static final long serialVersionUID = 5041093000505081735L;
 

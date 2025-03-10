@@ -8,12 +8,12 @@ public interface ResultInterface {
      *
      * @return an array of `ProposalResult`, in the order the `ProposalTally`s were submitted.
      */
-    public ProposalResultInterface[] getProposalResults();
+    ProposalResultInterface[] getProposalResults();
 
     /**
      * ProposalResults here are ordered by rank.
      *
      * @return an array of `ProposalResult`, in the order the `ProposalTally`s were ranked.
      */
-    public ProposalResultInterface[] getProposalResultsRanked();
+    ProposalResultInterface[] getProposalResultsRanked();
 }

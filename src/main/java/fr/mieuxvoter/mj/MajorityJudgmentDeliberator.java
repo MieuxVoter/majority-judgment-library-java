@@ -42,6 +42,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         BigInteger amountOfJudges = tally.getAmountOfJudges();
         Integer amountOfProposals = tally.getAmountOfProposals();
 
+        BigInteger sumOfMerits = BigInteger.ZERO;
         Result result = new Result();
         ProposalResult[] proposalResults = new ProposalResult[amountOfProposals];
 
@@ -49,12 +50,15 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
             String score = computeScore(proposalTally, amountOfJudges);
+            BigInteger merit = computeMerit(proposalTally, amountOfJudges, this.favorContestation);
+            sumOfMerits = sumOfMerits.add(merit);
             ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(
                     proposalTally, this.favorContestation
             );
             ProposalResult proposalResult = new ProposalResult();
             proposalResult.setIndex(proposalIndex);
             proposalResult.setScore(score);
+            proposalResult.setMerit(merit);
             proposalResult.setAnalysis(analysis);
             // proposalResult.setRank(???); // rank is computed below, AFTER the score pass
             proposalResults[proposalIndex] = proposalResult;
@@ -66,7 +70,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 proposalResultsSorted,
                 (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore()));
 
-        // III. Attribute a rank to each Proposal
+        // III. Attribute a rank to each Proposal and compute their merit
         int rank = 1;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
@@ -79,6 +83,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             }
             proposalResult.setRank(actualRank);
             rank += 1;
+
+            proposalResult.computeMeritAsPercentage(sumOfMerits);
         }
 
         result.setProposalResults(proposalResults);
@@ -126,7 +132,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     }
 
     /**
-     * @see computeScore() below
+     * @see this#computeScore(ProposalTallyInterface, BigInteger, Boolean, Boolean) below
      */
     private String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
         return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
@@ -134,7 +140,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
     /**
      * A higher score means a better rank. Assumes that grades' tallies are provided from "worst"
-     * grade to "best" grade.
+     * grade to "best" grade.  This score is fast to compute but is not meaningful.
      *
      * @param tally             Holds the tallies of each Grade for a single Proposal
      * @param amountOfJudges    Amount of judges participating
@@ -191,6 +197,52 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
 
         return score.toString();
+    }
+
+    private BigInteger computeMerit(
+            ProposalTallyInterface tally,
+            BigInteger amountOfJudges,
+            Boolean favorContestation
+    ) {
+        ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
+        analysis.reanalyze(tally, favorContestation);
+
+        int amountOfGrades = tally.getTally().length;
+
+        ProposalTallyInterface currentTally = tally.duplicate();
+
+        BigInteger merit = BigInteger.valueOf(analysis.getMedianGrade());
+        Integer cursorGrade = analysis.getMedianGrade();
+        Integer minProcessedGrade = cursorGrade;
+        Integer maxProcessedGrade = cursorGrade;
+
+        for (int i = 0; i < amountOfGrades - 1; i++) {
+
+            merit = merit.multiply(amountOfJudges);
+
+            if (analysis.getSecondMedianGroupSize().compareTo(BigInteger.ZERO) == 0) {
+                continue;
+            }
+
+            if (analysis.getSecondMedianGroupSign() > 0) {
+                cursorGrade = maxProcessedGrade + 1;
+                maxProcessedGrade = cursorGrade;
+            } else {
+                cursorGrade = minProcessedGrade - 1;
+                minProcessedGrade = cursorGrade;
+            }
+
+            merit = merit.add(
+                    analysis.getSecondMedianGroupSize().multiply(
+                            BigInteger.valueOf(analysis.getSecondMedianGroupSign())
+                    )
+            );
+
+            currentTally.moveJudgments(analysis.getMedianGrade(), cursorGrade);
+            analysis.reanalyze(currentTally, favorContestation);
+        }
+
+        return merit;
     }
 
     private int countDigits(int number) {

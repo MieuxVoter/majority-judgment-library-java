@@ -1,5 +1,7 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigInteger;
+
 public interface ProposalResultInterface {
 
     /**
@@ -22,6 +24,10 @@ public interface ProposalResultInterface {
      * need this, but it's here anyway.
      */
     String getScore();
+
+    BigInteger getMerit();
+
+    Double getMeritAsPercentage();
 
     /** Get more data about the proposal tally, such as the median grade. */
     ProposalTallyAnalysis getAnalysis();

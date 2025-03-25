@@ -10,10 +10,14 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+
 
 class MajorityJudgmentDeliberatorTest {
 
@@ -100,14 +104,14 @@ class MajorityJudgmentDeliberatorTest {
                         new ProposalTallyInterface[]{
                                 new ProposalTally(
                                         new Long[]{
-                                                11312415004L, 21153652410L,
-                                                24101523299L, 18758623562L
+                                                11_312_415_004L, 21_153_652_410L,
+                                                24_101_523_299L, 18_758_623_562L
                                         }
                                 ),
                                 new ProposalTally(
                                         new Long[]{
-                                                11312415004L, 21153652400L,
-                                                24101523299L, 18758623572L
+                                                11_312_415_004L, 21_153_652_400L,
+                                                24_101_523_299L, 18_758_623_572L
                                         }
                                 ),
                         });
@@ -117,6 +121,57 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals(2, result.getProposalResults().length);
         assertEquals(2, result.getProposalResults()[0].getRank());
         assertEquals(1, result.getProposalResults()[1].getRank());
+        assertEquals("670593969998983161296550287442546", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("670593970055723546867335687341546", result.getProposalResults()[1].getMerit().toString());
+        assertEquals(49.999999998, result.getProposalResults()[0].getMeritAsPercentage());
+        assertEquals(50.000000002, result.getProposalResults()[1].getMeritAsPercentage());
+    }
+
+    @Test
+    @DisplayName("Test 7 billions humans")
+    void testSevenBillionHumans() throws Throwable {
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally =
+                new Tally(
+                        new ProposalTallyInterface[]{
+                                new ProposalTally(
+                                        new Long[]{
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                7_000_000_000L,
+                                                0L, 0L, 0L, 0L, 0L, 0L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                0L, 0L, 0L,
+                                                7_000_000_000L,
+                                                0L, 0L, 0L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                0L, 0L, 0L, 0L, 0L, 0L,
+                                                7_000_000_000L
+                                        }
+                                ),
+                        });
+        ResultInterface result = mj.deliberate(tally);
+
+        assertEquals("302526000007202999999314000000097999999993000000001000000000", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("0", result.getProposalResults()[1].getMerit().toString());
+        assertEquals("352947000000000000000000000000000000000000000000000000000000", result.getProposalResults()[2].getMerit().toString());
+        assertEquals("705894000000000000000000000000000000000000000000000000000000", result.getProposalResults()[3].getMerit().toString());
+        assertEquals(22.222222223, result.getProposalResults()[0].getMeritAsPercentage());
+        assertEquals(0.0, result.getProposalResults()[1].getMeritAsPercentage());
+        assertEquals(25.925925926, result.getProposalResults()[2].getMeritAsPercentage());
+        assertEquals(51.851851852, result.getProposalResults()[3].getMeritAsPercentage());
     }
 
     @Test
@@ -385,6 +440,138 @@ class MajorityJudgmentDeliberatorTest {
         assertNotNull(result);
         assertEquals("202003003", result.getProposalResults()[0].getScore());
         assertEquals("104203003", result.getProposalResults()[1].getScore());
+    }
+
+
+    @Test
+    @DisplayName("Test numeric merit")
+    void testNumericMerit() throws Throwable {
+        Integer amountOfJudges = 23;
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally = (
+                new Tally(
+                        new ProposalTallyInterface[]{
+                                new ProposalTally(new Integer[]{5, 2, 4, 2, 4, 1, 5}),
+                                new ProposalTally(new Integer[]{3, 2, 7, 0, 4, 5, 2}),
+                                new ProposalTally(new Integer[]{6, 5, 3, 0, 5, 1, 3}),
+                                new ProposalTally(new Integer[]{2, 2, 4, 4, 5, 2, 4}),
+                        },
+                        amountOfJudges
+                )
+        );
+
+        ResultInterface result = mj.deliberate(tally);
+
+        assertNotNull(result);
+        assertEquals("376024199", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("370032259", result.getProposalResults()[1].getMerit().toString());
+        assertEquals("227896998", result.getProposalResults()[2].getMerit().toString());
+        assertEquals("512739688", result.getProposalResults()[3].getMerit().toString());
+
+        assertEquals(25.292657097, result.getProposalResults()[0].getMeritAsPercentage());
+        assertEquals(24.889618984, result.getProposalResults()[1].getMeritAsPercentage());
+        assertEquals(15.329121475, result.getProposalResults()[2].getMeritAsPercentage());
+        assertEquals(34.488602444, result.getProposalResults()[3].getMeritAsPercentage());
+
+        assertEquals(100.0,
+                result.getProposalResults()[0].getMeritAsPercentage()
+                + result.getProposalResults()[1].getMeritAsPercentage()
+                + result.getProposalResults()[2].getMeritAsPercentage()
+                + result.getProposalResults()[3].getMeritAsPercentage()
+        );
+    }
+
+    @Test
+    @DisplayName("Generate merit distribution")
+    void testMeritDistribution() throws Throwable {
+
+        class ProposalTallyFactory {
+
+            private final Integer amountOfGrades;
+            private final Integer amountOfJudges;
+
+            public ProposalTallyFactory(
+                    Integer amountOfGrades,
+                    Integer amountOfJudges
+            ) {
+                this.amountOfGrades = amountOfGrades;
+                this.amountOfJudges = amountOfJudges;
+            }
+
+            public ProposalTallyInterface[] generateAll() {
+                ArrayList<ProposalTally> all = new ArrayList<>();
+
+                List<Integer[]> tallies = multichoose(amountOfGrades, amountOfJudges);
+                for (Integer[] t : tallies) {
+                    all.add(new ProposalTally(t));
+                }
+
+                return all.toArray(new ProposalTally[0]);
+            }
+
+            /**
+             * All the ways to distribute k balls into n boxes.
+             * @param n amount of boxes
+             * @param k amount of balls
+             */
+            private List<Integer[]> multichoose(Integer n, Integer k) {
+                assert n >= 0;
+                assert k >= 0;
+
+                ArrayList<Integer[]> out = new ArrayList<>();
+
+                if (k == 0) {
+                    ArrayList<Integer> set = new ArrayList<>();
+                    for (int i = 0; i < n; i++) {
+                        set.add(0);
+                    }
+                    out.add(set.toArray(new Integer[0]));
+                    return out;
+                }
+
+                if (n == 0) {
+                    return out;
+                }
+
+                if (n == 1) {
+                    ArrayList<Integer> set = new ArrayList<>();
+                    set.add(k);
+                    out.add(set.toArray(new Integer[0]));
+                    return out;
+                }
+
+                for (Integer[] set: multichoose(n-1, k)) {
+                    ArrayList<Integer> seth = new ArrayList<>();
+                    seth.add(0);
+                    seth.addAll(Arrays.asList(set));
+                    out.add(seth.toArray(new Integer[0]));
+                }
+
+                for (Integer[] set: multichoose(n, k-1)) {
+                    ArrayList<Integer> seth = new ArrayList<>();
+
+                    seth.add(set[0] + 1);
+                    seth.addAll(Arrays.asList(Arrays.copyOfRange(set, 1, set.length)));
+                    out.add(seth.toArray(new Integer[0]));
+                }
+
+                return out;
+            }
+        }
+
+        ProposalTallyFactory factory = new ProposalTallyFactory(5, 23);
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally = (
+                new Tally(
+                        factory.generateAll()
+                )
+        );
+
+        ResultInterface result = mj.deliberate(tally);
+
+        for (ProposalResultInterface proposalResult: result.getProposalResultsRanked()) {
+            System.out.print(proposalResult.getMerit().toString() + "\n");
+        }
     }
 
     @Test

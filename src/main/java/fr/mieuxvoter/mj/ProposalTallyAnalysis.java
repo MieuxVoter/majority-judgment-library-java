@@ -10,7 +10,8 @@ import java.util.ArrayList;
  * <p>This uses BigInteger because in a normalization scenario we use the smallest common multiple
  * of the amounts of judges of proposals. It makes the code harder to read and understand, but it
  * allows us to bypass the floating-point nightmare of the normalization of merit profiles, which is
- * one way to handle default grades on some polls.
+ * one way to handle default grades on some polls. BigInteger is also used to compute the proportional
+ * score, a meaningful score for proportional representation, holding the merit of each proposal.
  */
 public class ProposalTallyAnalysis {
 

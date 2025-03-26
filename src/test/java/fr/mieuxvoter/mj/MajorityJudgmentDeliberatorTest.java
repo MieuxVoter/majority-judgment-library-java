@@ -475,103 +475,46 @@ class MajorityJudgmentDeliberatorTest {
 
         assertEquals(100.0,
                 result.getProposalResults()[0].getMeritAsPercentage()
-                + result.getProposalResults()[1].getMeritAsPercentage()
-                + result.getProposalResults()[2].getMeritAsPercentage()
-                + result.getProposalResults()[3].getMeritAsPercentage()
+                        + result.getProposalResults()[1].getMeritAsPercentage()
+                        + result.getProposalResults()[2].getMeritAsPercentage()
+                        + result.getProposalResults()[3].getMeritAsPercentage()
         );
     }
 
     @Test
-    @DisplayName("Generate merit distribution")
+    @DisplayName("Generate merit distribution CSV")
     void testMeritDistribution() throws Throwable {
-
-        class ProposalTallyFactory {
-
-            private final Integer amountOfGrades;
-            private final Integer amountOfJudges;
-
-            public ProposalTallyFactory(
-                    Integer amountOfGrades,
-                    Integer amountOfJudges
-            ) {
-                this.amountOfGrades = amountOfGrades;
-                this.amountOfJudges = amountOfJudges;
-            }
-
-            public ProposalTallyInterface[] generateAll() {
-                ArrayList<ProposalTally> all = new ArrayList<>();
-
-                List<Integer[]> tallies = multichoose(amountOfGrades, amountOfJudges);
-                for (Integer[] t : tallies) {
-                    all.add(new ProposalTally(t));
-                }
-
-                return all.toArray(new ProposalTally[0]);
-            }
-
-            /**
-             * All the ways to distribute k balls into n boxes.
-             * @param n amount of boxes
-             * @param k amount of balls
-             */
-            private List<Integer[]> multichoose(Integer n, Integer k) {
-                assert n >= 0;
-                assert k >= 0;
-
-                ArrayList<Integer[]> out = new ArrayList<>();
-
-                if (k == 0) {
-                    ArrayList<Integer> set = new ArrayList<>();
-                    for (int i = 0; i < n; i++) {
-                        set.add(0);
-                    }
-                    out.add(set.toArray(new Integer[0]));
-                    return out;
-                }
-
-                if (n == 0) {
-                    return out;
-                }
-
-                if (n == 1) {
-                    ArrayList<Integer> set = new ArrayList<>();
-                    set.add(k);
-                    out.add(set.toArray(new Integer[0]));
-                    return out;
-                }
-
-                for (Integer[] set: multichoose(n-1, k)) {
-                    ArrayList<Integer> seth = new ArrayList<>();
-                    seth.add(0);
-                    seth.addAll(Arrays.asList(set));
-                    out.add(seth.toArray(new Integer[0]));
-                }
-
-                for (Integer[] set: multichoose(n, k-1)) {
-                    ArrayList<Integer> seth = new ArrayList<>();
-
-                    seth.add(set[0] + 1);
-                    seth.addAll(Arrays.asList(Arrays.copyOfRange(set, 1, set.length)));
-                    out.add(seth.toArray(new Integer[0]));
-                }
-
-                return out;
-            }
-        }
-
         ProposalTallyFactory factory = new ProposalTallyFactory(5, 23);
-        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
-        TallyInterface tally = (
-                new Tally(
-                        factory.generateAll()
-                )
-        );
+        TallyInterface tally = new Tally(factory.generateAll());
 
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         ResultInterface result = mj.deliberate(tally);
 
-        for (ProposalResultInterface proposalResult: result.getProposalResultsRanked()) {
-            System.out.print(proposalResult.getMerit().toString() + "\n");
+        System.out.print(
+            "profile"
+                + ","
+                + "rank"
+                + ","
+                + "median"
+                + ","
+                + "merit"
+        );
+
+        for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
+            System.out.print(
+                    "\n"
+                            + "\""
+                            + Arrays.toString(proposalResult.getAnalysis().tally.getTally())
+                            + "\""
+                            + ", "
+                            + proposalResult.getRank()
+                            + ", "
+                            + proposalResult.getAnalysis().getMedianGrade()
+                            + ", "
+                            + proposalResult.getMerit().toString()
+            );
         }
+
     }
 
     @Test

@@ -4,6 +4,10 @@
 /.project
 /.gradle
 
+/gradlew
+/gradlew.bat
+/*.jar
+
 /build
 /docs/build
 /target

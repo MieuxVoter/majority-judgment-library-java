@@ -28,6 +28,7 @@ author = 'MieuxVoter.fr'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    #'javasphinx',  #  Could not import extension javasphinx (exception: cannot import name 'l_' from 'sphinx.locale'   (perhaps sphinx version issue)
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -1,22 +1,25 @@
 package fr.mieuxvoter.mj;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import net.joshka.junit.json.params.JsonFileSource;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class MajorityJudgmentDeliberatorTest {
@@ -482,39 +485,62 @@ class MajorityJudgmentDeliberatorTest {
     }
 
     @Test
-    @DisplayName("Generate merit distribution CSV")
+    @DisplayName("Generate merit distribution CSV for study")
     void testMeritDistribution() throws Throwable {
-        ProposalTallyFactory factory = new ProposalTallyFactory(5, 23);
+
+        // This test has no assertions.
+        // It is not a test, but a handy entrypoint for data generation.
+        // This ought to be moved somewhere else, probably another repo.
+
+        Integer amountOfGrades = 7;
+        Integer amountOfJudges = 17;
+        ProposalTallyFactory factory = new ProposalTallyFactory(amountOfGrades, amountOfJudges);
         TallyInterface tally = new Tally(factory.generateAll());
 
         DeliberatorInterface mj = new MajorityJudgmentDeliberator();
         ResultInterface result = mj.deliberate(tally);
 
-        System.out.print(
-            "profile"
-                + ","
-                + "rank"
-                + ","
-                + "median"
-                + ","
-                + "merit"
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(
+                "profile"
+                        + ","
+                        + "rank"
+                        + ","
+                        + "median"
+                        + ","
+                        + "merit"
         );
 
         for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
-            System.out.print(
-                    "\n"
-                            + "\""
-                            + Arrays.toString(proposalResult.getAnalysis().tally.getTally())
-                            + "\""
-                            + ", "
-                            + proposalResult.getRank()
-                            + ", "
-                            + proposalResult.getAnalysis().getMedianGrade()
-                            + ", "
-                            + proposalResult.getMerit().toString()
-            );
+            stringBuilder
+                    .append("\n")
+                    .append("\"")
+                    .append(Arrays.toString(proposalResult.getAnalysis().tally.getTally()))
+                    .append("\"")
+                    .append(", ")
+                    .append(proposalResult.getRank())
+                    .append(", ")
+                    .append(proposalResult.getAnalysis().getMedianGrade())
+                    .append(", ")
+                    .append(proposalResult.getMerit().toString())
+            ;
         }
 
+        Path FILE_PATH = Paths.get(".", "merit_distribution.csv");
+        try (
+                BufferedWriter writer = Files.newBufferedWriter
+                        (
+                                FILE_PATH,
+                                StandardCharsets.UTF_8,
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.TRUNCATE_EXISTING
+                        )
+        ) {
+            writer.write(stringBuilder.toString());
+        } catch (IOException e) {
+            System.err.println("Cannot write merit distribution to CSV file");
+            e.printStackTrace();
+        }
     }
 
     @Test

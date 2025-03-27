@@ -46,7 +46,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         Result result = new Result();
         ProposalResult[] proposalResults = new ProposalResult[amountOfProposals];
 
-        // I. Compute the scores of each Proposal
+        // I. Compute the score and merit of each Proposal
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
             String score = computeScore(proposalTally, amountOfJudges);
@@ -70,7 +70,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 proposalResultsSorted,
                 (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore()));
 
-        // III. Attribute a rank to each Proposal and compute their merit
+        // III. Attribute a rank to each Proposal and compute their relative merit
         int rank = 1;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
@@ -141,6 +141,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     /**
      * A higher score means a better rank. Assumes that grades' tallies are provided from "worst"
      * grade to "best" grade.  This score is fast to compute but is not meaningful.
+     * For a meaningful scalar value, see computeMerit.
      *
      * @param tally             Holds the tallies of each Grade for a single Proposal
      * @param amountOfJudges    Amount of judges participating

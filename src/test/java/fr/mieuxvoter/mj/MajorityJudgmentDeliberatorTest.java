@@ -493,7 +493,7 @@ class MajorityJudgmentDeliberatorTest {
         // This ought to be moved somewhere else, probably another repo.
 
         Integer amountOfGrades = 7;
-        Integer amountOfJudges = 17;
+        Integer amountOfJudges = 11;
         ProposalTallyFactory factory = new ProposalTallyFactory(amountOfGrades, amountOfJudges);
         TallyInterface tally = new Tally(factory.generateAll());
 

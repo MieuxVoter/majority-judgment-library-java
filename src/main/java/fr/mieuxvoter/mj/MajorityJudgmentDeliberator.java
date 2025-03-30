@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static java.lang.Math.*;
+
 /**
  * Deliberate (rank proposals) using Majority Judgment.
  *
@@ -42,7 +44,18 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         BigInteger amountOfJudges = tally.getAmountOfJudges();
         Integer amountOfProposals = tally.getAmountOfProposals();
 
+        BigInteger maxMerit = BigInteger.ONE;
         BigInteger sumOfMerits = BigInteger.ZERO;
+
+        // O. Compute the (maximum!) merit a 100% EXCELLENT proposal would get.
+        if (tallies.length > 0) {
+            int amountOfGrades = tallies[0].getTally().length;
+            Integer[] bestTally = new Integer[amountOfGrades];
+            Arrays.fill(bestTally, 0);
+            bestTally[bestTally.length - 1] = amountOfJudges.intValue();
+            maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
+        }
+
         Result result = new Result();
         ProposalResult[] proposalResults = new ProposalResult[amountOfProposals];
 
@@ -74,6 +87,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         int rank = 1;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
+            // Attribute the rank
             Integer actualRank = rank;
             if (proposalIndex > 0) {
                 ProposalResult proposalResultBefore = proposalResultsSorted[proposalIndex - 1];
@@ -84,6 +98,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             proposalResult.setRank(actualRank);
             rank += 1;
 
+            // Affine the merit and compute the relative merit
+            //proposalResult.setMerit(adjustMerit(proposalResult.getMerit(), maxMerit));
             proposalResult.computeMeritAsPercentage(sumOfMerits);
         }
 
@@ -244,6 +260,52 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
 
         return merit;
+    }
+
+    private BigInteger adjustMerit(BigInteger merit, BigInteger maxMerit) {
+        BigInteger adjustedMerit = BigInteger.ZERO.add(merit);  // copy
+
+        // We're cheating here, at the expense of numerical stability
+        // We could use a recursive Euclidean div ?
+        long precision = 1_000_000_000;
+        double meritNormalized = round(merit.multiply(
+                BigInteger.valueOf(precision * 10)
+        ).divide(maxMerit).doubleValue() / 10.0) / (double) precision;
+
+        double rankNormalized = meritToRankModel(meritNormalized);
+
+        adjustedMerit = BigInteger.valueOf(round(
+                (1.0 - rankNormalized) * (double) precision
+        )).multiply(maxMerit).divide(
+                BigInteger.valueOf(precision)
+        );
+
+        return adjustedMerit;
+    }
+
+    private double meritToRankModel(double merit) {
+        int amountOfGrades = 7; // FIXME
+
+        // Values derived from rough model fitting by hand ; they can be improved.
+        double[] amplitudes = new double[]{
+                0.358682, 1.09248, 1.69632, 1.61568, 0.95616, 0.2808,
+        };
+        double tightness = 96.0;
+
+        double rank = 0.0;  // from 0.0 (exclusive) to 1.0 (inclusive) ; is 'double' enough precision?
+        for (int i = 0; i < amountOfGrades - 1; i++) {
+            rank += amplitudes[i] * sigmoid(
+                    merit,
+                    tightness,
+                    (2.0 * i + 1.0) / (2.0 * (amountOfGrades - 1))
+            );
+        }
+
+        return rank * (1.0 / (amountOfGrades - 1));
+    }
+
+    private double sigmoid(double x, double tightness, double origin) {
+        return 1.0 / (1.0 + pow(E, tightness * (x - origin)));
     }
 
     private int countDigits(int number) {

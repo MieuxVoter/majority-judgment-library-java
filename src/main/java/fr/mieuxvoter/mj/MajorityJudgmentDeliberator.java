@@ -44,15 +44,15 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         BigInteger amountOfJudges = tally.getAmountOfJudges();
         Integer amountOfProposals = tally.getAmountOfProposals();
 
-        BigInteger maxMerit = BigInteger.ONE;
         BigInteger sumOfMerits = BigInteger.ZERO;
 
         // O. Compute the (maximum!) merit a 100% EXCELLENT proposal would get.
+        BigInteger maxMerit = BigInteger.ONE;
         if (tallies.length > 0) {
             int amountOfGrades = tallies[0].getTally().length;
-            Integer[] bestTally = new Integer[amountOfGrades];
-            Arrays.fill(bestTally, 0);
-            bestTally[bestTally.length - 1] = amountOfJudges.intValue();
+            BigInteger[] bestTally = new BigInteger[amountOfGrades];
+            Arrays.fill(bestTally, BigInteger.ZERO);
+            bestTally[bestTally.length - 1] = amountOfJudges;
             maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
         }
 

@@ -16,6 +16,10 @@ public class ProposalResult implements ProposalResultInterface {
 
     protected Double meritAsPercentage = 0.0;
 
+    protected Double meritAdjusted = 0.0;
+
+    protected Double meritAdjustedAsPercentage = 0.0;
+
     protected ProposalTallyAnalysis analysis;
 
     public Integer getIndex() {
@@ -54,16 +58,44 @@ public class ProposalResult implements ProposalResultInterface {
         return meritAsPercentage;
     }
 
+    public Double getMeritAdjusted() {
+        return meritAdjusted;
+    }
+
+    public ProposalResult setMeritAdjusted(Double meritAdjusted) {
+        this.meritAdjusted = meritAdjusted;
+        return this;
+    }
+
+    public Double getMeritAdjustedAsPercentage() {
+        return meritAdjustedAsPercentage;
+    }
+
     public void computeMeritAsPercentage(BigInteger sumOfMerits) {
         if (sumOfMerits.compareTo(BigInteger.ZERO) == 0) {
             this.meritAsPercentage = 0.0;
+            this.meritAdjustedAsPercentage = 0.0;
             return;
         }
 
+        this.meritAsPercentage = divideAsPercentage(getMerit(), sumOfMerits);
+    }
+
+    public void computeMeritAdjustedAsPercentage(Double sumOfAdjustedMerits) {
+        if (sumOfAdjustedMerits == 0) {
+            this.meritAdjustedAsPercentage = 0.0;
+            return;
+        }
+
+        this.meritAdjustedAsPercentage = 100.0 * getMeritAdjusted() / sumOfAdjustedMerits;
+    }
+
+    // This is a HACK ; improve it !
+    private Double divideAsPercentage(BigInteger numerator, BigInteger denominator) {
         long precision = 1_000_000_000; // big enough for 7 billion humans
-        this.meritAsPercentage = round(this.getMerit().multiply(
+        return round(numerator.multiply(
                 BigInteger.valueOf(100 * precision * 10)
-        ).divide(sumOfMerits).doubleValue() / 10.0) / (double) precision;
+        ).divide(denominator).doubleValue() / 10.0) / (double) precision;
     }
 
     public ProposalTallyAnalysis getAnalysis() {

@@ -29,6 +29,10 @@ public interface ProposalResultInterface {
 
     Double getMeritAsPercentage();
 
+    Double getMeritAdjusted();
+
+    Double getMeritAdjustedAsPercentage();
+
     /** Get more data about the proposal tally, such as the median grade. */
     ProposalTallyAnalysis getAnalysis();
 }

@@ -45,6 +45,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         Integer amountOfProposals = tally.getAmountOfProposals();
 
         BigInteger sumOfMerits = BigInteger.ZERO;
+        Double sumOfAdjustedMerits = 0.0;
 
         // O. Compute the (maximum!) merit a 100% EXCELLENT proposal would get.
         BigInteger maxMerit = BigInteger.ONE;
@@ -98,9 +99,18 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             proposalResult.setRank(actualRank);
             rank += 1;
 
-            // Affine the merit and compute the relative merit
-            //proposalResult.setMerit(adjustMerit(proposalResult.getMerit(), maxMerit));
+            // Adjust (make affine) the merit
+            proposalResult.setMeritAdjusted(adjustMerit(
+                    proposalResult.getMerit(), maxMerit, amountOfJudges
+            ));
+            sumOfAdjustedMerits += proposalResult.getMeritAdjusted();
+        }
+
+        // Compute the relative merits
+        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+            ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
             proposalResult.computeMeritAsPercentage(sumOfMerits);
+            proposalResult.computeMeritAdjustedAsPercentage(sumOfAdjustedMerits);
         }
 
         result.setProposalResults(proposalResults);
@@ -262,36 +272,72 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return merit;
     }
 
-    private BigInteger adjustMerit(BigInteger merit, BigInteger maxMerit) {
-        BigInteger adjustedMerit = BigInteger.ZERO.add(merit);  // copy
-
-        // We're cheating here, at the expense of numerical stability
+    private Double adjustMerit(BigInteger merit, BigInteger maxMerit, BigInteger amountOfJudges) {
+        // We're "cheating" here, at the expense of numerical stability
         // We could use a recursive Euclidean div ?
         long precision = 1_000_000_000;
         double meritNormalized = round(merit.multiply(
                 BigInteger.valueOf(precision * 10)
         ).divide(maxMerit).doubleValue() / 10.0) / (double) precision;
 
-        double rankNormalized = meritToRankModel(meritNormalized);
+        double rankNormalized = meritToRankModel(meritNormalized, amountOfJudges.intValue());
 
-        adjustedMerit = BigInteger.valueOf(round(
-                (1.0 - rankNormalized) * (double) precision
-        )).multiply(maxMerit).divide(
-                BigInteger.valueOf(precision)
-        );
+//        BigInteger adjustedMerit = BigInteger.ZERO.add(merit);  // copy
+//        adjustedMerit = BigInteger.valueOf(round(
+//                (1.0 - rankNormalized) * (double) precision
+//        )).multiply(maxMerit).divide(
+//                BigInteger.valueOf(precision)
+//        );
+//        return adjustedMerit;
 
-        return adjustedMerit;
+        return (1.0 - rankNormalized);
     }
 
-    private double meritToRankModel(double merit) {
+    private double meritToRankModel(double merit, Integer amountOfJudges) {
         int amountOfGrades = 7; // FIXME
 
-        // Values derived from rough model fitting by hand ; they can be improved.
-        double[] amplitudes = new double[]{
-                0.358682, 1.09248, 1.69632, 1.61568, 0.95616, 0.2808,
-        };
-        double tightness = 96.0;
+        class SigmoidAmplitudeModel {
+            Double coeff;
+            Double offset;
+            Double origin;
 
+            public SigmoidAmplitudeModel(Double coeff, Double offset, Double origin) {
+                this.coeff = coeff;
+                this.offset = offset;
+                this.origin = origin;
+            }
+
+            public Double computeAmplitude(Integer amountOfJudges) {
+                return this.offset + (this.coeff / (amountOfJudges - this.origin));
+            }
+        }
+
+        // Values derived from rough model fitting ; they can be improved
+        SigmoidAmplitudeModel[] sam = new SigmoidAmplitudeModel[]{
+                new SigmoidAmplitudeModel(0.5918756749697929, 0.0283650284831609, -1.1514768060735074),
+                new SigmoidAmplitudeModel(1.2239424469290872, 0.1482010931224683, -16.3552159899377614),
+                new SigmoidAmplitudeModel(-0.5592816818757540, 0.3123093902719977, -2.0931675704689443),
+                new SigmoidAmplitudeModel(-0.9888738957553507, 0.3136696647459276, -4.8529251973066447),
+                new SigmoidAmplitudeModel(-0.0370903838252796, 0.1591017470094314, -0.9399076517275036),
+                new SigmoidAmplitudeModel(0.2367789010429392, 0.0324575577968845, -0.8907160168896431),
+        };
+
+        // Values derived from rough model fitting by hand ; they can be improved.
+//        double[] amplitudes = new double[]{
+//                0.358682, 1.09248, 1.69632, 1.61568, 0.95616, 0.2808,
+//        };
+
+        Double sumOfAmplitudes = 0.0;
+        Double[] amplitudes = new Double[amountOfGrades];
+        for (int i = 0; i < amountOfGrades - 1; i++) {
+            amplitudes[i] = sam[i].computeAmplitude(amountOfJudges);
+            sumOfAmplitudes += amplitudes[i];
+        }
+        for (int i = 0; i < amountOfGrades - 1; i++) {
+            amplitudes[i] = amplitudes[i] / sumOfAmplitudes;
+        }
+
+        double tightness = 96.0;
         double rank = 0.0;  // from 0.0 (exclusive) to 1.0 (inclusive) ; is 'double' enough precision?
         for (int i = 0; i < amountOfGrades - 1; i++) {
             rank += amplitudes[i] * sigmoid(
@@ -301,7 +347,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             );
         }
 
-        return rank * (1.0 / (amountOfGrades - 1));
+        return rank;
+//        return rank * (1.0 / (amountOfGrades - 1));
     }
 
     private double sigmoid(double x, double tightness, double origin) {

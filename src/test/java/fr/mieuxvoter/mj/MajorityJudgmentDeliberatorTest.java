@@ -487,13 +487,16 @@ class MajorityJudgmentDeliberatorTest {
     @Test
     @DisplayName("Generate merit distribution CSV for study")
     void testMeritDistribution() throws Throwable {
+        for (int i = 1; i < 41; i++) {
+            generateMeritDistribution(7, i);
+        }
+    }
 
+    void generateMeritDistribution(Integer amountOfGrades, Integer amountOfJudges) throws Throwable {
         // This test has no assertions.
         // It is not a test, but a handy entrypoint for data generation.
-        // This ought to be moved somewhere else, probably another repo.
+        // This ought to be moved somewhere else.
 
-        Integer amountOfGrades = 7;
-        Integer amountOfJudges = 11;
         ProposalTallyFactory factory = new ProposalTallyFactory(amountOfGrades, amountOfJudges);
         TallyInterface tally = new Tally(factory.generateAll());
 
@@ -509,6 +512,8 @@ class MajorityJudgmentDeliberatorTest {
                         + "median"
                         + ","
                         + "merit"
+                        + ","
+                        + "merit_adjusted"
         );
 
         for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
@@ -523,10 +528,15 @@ class MajorityJudgmentDeliberatorTest {
                     .append(proposalResult.getAnalysis().getMedianGrade())
                     .append(", ")
                     .append(proposalResult.getMerit().toString())
+                    .append(", ")
+                    .append(String.format("%.16f", proposalResult.getMeritAdjusted()))
             ;
         }
 
-        Path FILE_PATH = Paths.get(".", "merit_distribution.csv");
+        Path FILE_PATH = Paths.get(
+                ".",
+                String.format("merit_distribution_%d_grades_%d_judges.csv", amountOfGrades,  amountOfJudges)
+        );
         try (
                 BufferedWriter writer = Files.newBufferedWriter
                         (

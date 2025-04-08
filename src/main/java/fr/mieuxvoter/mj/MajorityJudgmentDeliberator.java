@@ -297,35 +297,46 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         int amountOfGrades = 7; // FIXME
 
         class SigmoidAmplitudeModel {
-            Double coeff;
-            Double offset;
-            Double origin;
+            final Double coeff;
+            final Double offset;
+            final Double origin;
+            final Double sin_ampli;
+            final Double sin_origin;
+            final Double sin_phase;
 
-            public SigmoidAmplitudeModel(Double coeff, Double offset, Double origin) {
+            public SigmoidAmplitudeModel(
+                    Double coeff,
+                    Double offset,
+                    Double origin,
+                    Double sin_ampli,
+                    Double sin_origin,
+                    Double sin_phase
+            ) {
                 this.coeff = coeff;
                 this.offset = offset;
                 this.origin = origin;
+                this.sin_ampli = sin_ampli;
+                this.sin_origin = sin_origin;
+                this.sin_phase = sin_phase;
             }
 
             public Double computeAmplitude(Integer amountOfJudges) {
-                return this.offset + (this.coeff / (amountOfJudges - this.origin));
+                return
+                        this.offset + (this.coeff / (amountOfJudges - this.origin))
+                        +
+                        this.sin_ampli * sin(amountOfJudges * PI + this.sin_phase) / (amountOfJudges - this.sin_origin);
             }
         }
 
         // Values derived from rough model fitting ; they can be improved
         SigmoidAmplitudeModel[] sam = new SigmoidAmplitudeModel[]{
-                new SigmoidAmplitudeModel(0.5918756749697929, 0.0283650284831609, -1.1514768060735074),
-                new SigmoidAmplitudeModel(1.2239424469290872, 0.1482010931224683, -16.3552159899377614),
-                new SigmoidAmplitudeModel(-0.5592816818757540, 0.3123093902719977, -2.0931675704689443),
-                new SigmoidAmplitudeModel(-0.9888738957553507, 0.3136696647459276, -4.8529251973066447),
-                new SigmoidAmplitudeModel(-0.0370903838252796, 0.1591017470094314, -0.9399076517275036),
-                new SigmoidAmplitudeModel(0.2367789010429392, 0.0324575577968845, -0.8907160168896431),
+                new SigmoidAmplitudeModel(0.5151336373041772, 0.0304017096437998, -0.1560819745436698, -0.0642768687910415, 3.7019618565115722, -0.2267673450950530),
+                new SigmoidAmplitudeModel(0.8321495032592745, 0.1538010001096599, -10.1403742732170450, 0.1452337649130754, 2.9093303593527824, 0.1670760936959231),
+                new SigmoidAmplitudeModel(-0.5832534017217945, 0.3128738036537556, -2.4481699553712186, 1.7698591489043021, 0.0064898411429031, -3.1491904326892173),
+                new SigmoidAmplitudeModel(-0.9135479603269890, 0.3121169039235479, -4.0419384013683608, -0.0398619334678863, 2.2608983418537969, -3.5661704309341040),
+                new SigmoidAmplitudeModel(-0.0358891062680384, 0.1592742142625385, 0.8473094470570051, -0.1720450496934443, 0.8776512589952787, 0.1900715592340584),
+                new SigmoidAmplitudeModel(0.2965479931458628, 0.0309932939590777, -2.7064785369970221, -0.0616634512919992, 3.3069369590264279, -3.3295936102008192),
         };
-
-        // Values derived from rough model fitting by hand ; they can be improved.
-//        double[] amplitudes = new double[]{
-//                0.358682, 1.09248, 1.69632, 1.61568, 0.95616, 0.2808,
-//        };
 
         Double sumOfAmplitudes = 0.0;
         Double[] amplitudes = new Double[amountOfGrades];
@@ -337,7 +348,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             amplitudes[i] = amplitudes[i] / sumOfAmplitudes;
         }
 
-        double tightness = 96.0;
+        double tightness = 96.0; // derived from fitting
         double rank = 0.0;  // from 0.0 (exclusive) to 1.0 (inclusive) ; is 'double' enough precision?
         for (int i = 0; i < amountOfGrades - 1; i++) {
             rank += amplitudes[i] * sigmoid(
@@ -348,7 +359,6 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         }
 
         return rank;
-//        return rank * (1.0 / (amountOfGrades - 1));
     }
 
     private double sigmoid(double x, double tightness, double origin) {

@@ -10,25 +10,21 @@ Every merit profile has an _absolute rank_, which is its rank in the MJ poll whe
 
 A simple formula for a _scalar merit_ can therefore be:
 
-$
+$$
 Scalar\ Merit = Amount\ of\ Possible\ Merit\ Profiles - Absolute\ Rank
-$
+$$
 
 Sadly, the amount of possible merit profiles for a given amount of judges and grades grows big quite fast.  Too fast.
 
 > 💡 Mathematically, a Merit Profile is a [Multiset](https://en.wikipedia.org/wiki/Multiset), so some work has been laid out already.
 
-$Amount\ of\ Possible\ Merit\ Profiles = \left(\!\!{n \choose k}\!\!\right) = {n+k-1 \choose k} = \frac{(n+k-1)!}{k!\,(n-1)!} = {n(n+1)(n+2)\cdots(n+k-1)\over k!}$
+$Amount\ of\ Possible\ Merit\ Profiles = \left({n \choose k}\right) = {n+k-1 \choose k} = \frac{(n+k-1)!}{k!\,(n-1)!} = {n(n+1)(n+2)\cdots(n+k-1)\over k!}$
 
 Where:
-$
-\left\{
-    \begin{array}{ll}
-        n = Amount\ of\ Grades = 7\ for\ example\\
-        k = Amount\ of\ Judges = 40\ for\ example
-    \end{array}
-\right.
-$
+
+$$n = Amount\ of\ Grades = 7\ for\ example$$
+$$k = Amount\ of\ Judges = 40\ for\ example$$
+
 
 Let's hack some Python to see how the amount of possible merit profiles behave:
 
@@ -55,9 +51,6 @@ def multiset_coefficient(n: int, k: int) -> int:
 multiset_coefficient(7, 40)  # Amount of possible merit profiles for 7 grades and 40 judges
 ```
 
-
-
-
     9366819
 
 
@@ -72,11 +65,6 @@ lots
 ```
 
     29 digits is too many fingers
-
-
-
-
-
     23304747394848625835520392001
 
 
@@ -609,12 +597,10 @@ $$
 t = 96\ \ \tiny(fitted)
 $$
 $$
-\left\{
-    \begin{array}{ll}
-        a_i = \frac{coeff_i}{k-origin_i} + offset_i + sin(\pi k+sin\_phase_i) \frac{sin\_ampli_i}{k-sin\_origin_i}\ \ \tiny(fitted),\ if\ k > 10\\
-        a_i = from\ data\ \ \tiny(gathered),\ if\ k \le 10
-    \end{array}
-\right.
+a_i = \frac{coeff_i}{k-origin_i} + offset_i + sin(\pi k+sin\_phase_i) \frac{sin\_ampli_i}{k-sin\_origin_i}\ \ \tiny(fitted),\ if\ k > 10
+$$
+$$
+a_i = from\ data\ \ \tiny(gathered),\ if\ k \le 10
 $$
 $$
 y = \sum_{i=1}^{n - 1} \frac{a_i}{1 + e^{t(x - \frac{2i+1}{2(n-1)})}}
@@ -777,17 +763,6 @@ plot_distribution_constraint(
     color=extremely_brigaded_profiles_color,
 )
 
-# WIP : meh, no expected merits
-# half_brigaded_profiles = np.asarray([str([j, i//8, i//8, i//8, i//8, i//8, (i//2-j)]) for j in range(i//2+1)])
-# print(len(half_brigaded_profiles),"Half Brigaded Merit Profiles",half_brigaded_profiles)
-# plot_distribution_constraint(
-#     label="Half Brigaded Merit Profiles",
-#     form="[i, 1, 1, 1, 1, 1, (k/2-i)] for i in [0,k/2[",
-#     profiles=half_brigaded_profiles,
-#     expected_merits=np.linspace(1.0, 0.0, len(half_brigaded_profiles)),
-#     color="#ff9933",
-# )
-
 if k > 5:
     mostly_brigaded_profiles = np.asarray([str([j, 1, 1, 1, 1, 1, (k-5-j)]) for j in range(k-5+1)])
     print(len(mostly_brigaded_profiles), "Mostly Brigaded Merit Profiles", mostly_brigaded_profiles)
@@ -855,9 +830,7 @@ plt.show()
 
 
 
-    
 ![png](output_33_1.png)
-    
 
 
 In red, that's the distribution we need to validate the identity with uninominal, in extreme brigadism cases.

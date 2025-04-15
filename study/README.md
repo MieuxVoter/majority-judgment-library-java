@@ -597,7 +597,7 @@ $$
 t = 96\ \ \tiny(fitted)
 $$
 $$
-a_i = \frac{coeff_i}{k-origin_i} + offset_i + sin(\pi k+sin\_phase_i) \frac{sin\_ampli_i}{k-sin\_origin_i}\ \ \tiny(fitted),\ if\ k > 10
+a_i = \frac{coeff_i}{k-origin_i} + offset_i + sin(\pi k+sinPhase_i) \frac{sinAmpli_i}{k-sinOrigin_i}\ \ \tiny(fitted),\ if\ k > 10
 $$
 $$
 a_i = from\ data\ \ \tiny(gathered),\ if\ k \le 10

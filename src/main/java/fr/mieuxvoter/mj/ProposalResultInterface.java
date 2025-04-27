@@ -25,12 +25,21 @@ public interface ProposalResultInterface {
      */
     String getScore();
 
+    /**
+     * @return the MJ-Score merit, as suggested by Marc Paraire.
+     * See study/output_14_0.png to see how it is distributed.
+     */
     BigInteger getMerit();
 
+    /**
+     * @return the proportional representation computed from MJ-Score merit.
+     */
     Double getMeritAsPercentage();
 
+    /** experimental **/
     Double getMeritAdjusted();
 
+    /** experimental **/
     Double getMeritAdjustedAsPercentage();
 
     /** Get more data about the proposal tally, such as the median grade. */

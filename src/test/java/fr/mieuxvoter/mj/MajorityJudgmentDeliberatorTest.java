@@ -484,18 +484,20 @@ class MajorityJudgmentDeliberatorTest {
         );
     }
 
-    @Test
-    @DisplayName("Generate merit distribution CSV for study")
-    void testMeritDistribution() throws Throwable {
-        for (int i = 1; i < 41; i++) {
-            generateMeritDistribution(7, i);
-        }
-    }
+//    @Test
+//    @DisplayName("Generate merit distribution CSV for study")
+//    void testMeritDistribution() throws Throwable {
+//        for (int i = 23; i < 24; i++) {
+//            generateMeritDistribution(7, i);
+//        }
+//    }
 
     void generateMeritDistribution(Integer amountOfGrades, Integer amountOfJudges) throws Throwable {
         // This test has no assertions.
         // It is not a test, but a handy entrypoint for data generation.
         // This ought to be moved somewhere else.
+
+        String delimiter = ",";
 
         ProposalTallyFactory factory = new ProposalTallyFactory(amountOfGrades, amountOfJudges);
         TallyInterface tally = new Tally(factory.generateAll());
@@ -506,13 +508,13 @@ class MajorityJudgmentDeliberatorTest {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(
                 "profile"
-                        + ","
+                        + delimiter
                         + "rank"
-                        + ","
+                        + delimiter
                         + "median"
-                        + ","
+                        + delimiter
                         + "merit"
-                        + ","
+                        + delimiter
                         + "merit_adjusted"
         );
 
@@ -522,13 +524,13 @@ class MajorityJudgmentDeliberatorTest {
                     .append("\"")
                     .append(Arrays.toString(proposalResult.getAnalysis().tally.getTally()))
                     .append("\"")
-                    .append(", ")
+                    .append(delimiter).append(" ")
                     .append(proposalResult.getRank())
-                    .append(", ")
+                    .append(delimiter).append(" ")
                     .append(proposalResult.getAnalysis().getMedianGrade())
-                    .append(", ")
+                    .append(delimiter).append(" ")
                     .append(proposalResult.getMerit().toString())
-                    .append(", ")
+                    .append(delimiter).append(" ")
                     .append(String.format("%.16f", proposalResult.getMeritAdjusted()))
             ;
         }

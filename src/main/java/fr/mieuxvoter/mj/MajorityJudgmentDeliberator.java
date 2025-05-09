@@ -305,34 +305,34 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         int amountOfGrades = 7; // FIXME
 
         class SigmoidAmplitudeModel {
-            final Double coeff;
+            final Double coefficient;
             final Double offset;
             final Double origin;
-            final Double sin_ampli;
+            final Double sin_amplitude;
             final Double sin_origin;
             final Double sin_phase;
 
             public SigmoidAmplitudeModel(
-                    Double coeff,
+                    Double coefficient,
                     Double offset,
                     Double origin,
-                    Double sin_ampli,
+                    Double sin_amplitude,
                     Double sin_origin,
                     Double sin_phase
             ) {
-                this.coeff = coeff;
+                this.coefficient = coefficient;
                 this.offset = offset;
                 this.origin = origin;
-                this.sin_ampli = sin_ampli;
+                this.sin_amplitude = sin_amplitude;
                 this.sin_origin = sin_origin;
                 this.sin_phase = sin_phase;
             }
 
             public Double computeAmplitude(Integer amountOfJudges) {
                 return
-                        this.offset + (this.coeff / (amountOfJudges - this.origin))
+                        this.offset + (this.coefficient / (amountOfJudges - this.origin))
                         +
-                        this.sin_ampli * sin(amountOfJudges * PI + this.sin_phase) / (amountOfJudges - this.sin_origin);
+                        this.sin_amplitude * sin(amountOfJudges * PI + this.sin_phase) / (amountOfJudges - this.sin_origin);
             }
         }
 
@@ -374,10 +374,12 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     }
 
     private int countDigits(int number) {
+        //noinspection StringTemplateMigration
         return ("" + number).length();
     }
 
     private int countDigits(BigInteger number) {
+        //noinspection StringTemplateMigration
         return ("" + number).length();
     }
 }

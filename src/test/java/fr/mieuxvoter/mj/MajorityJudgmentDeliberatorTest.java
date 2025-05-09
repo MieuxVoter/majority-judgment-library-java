@@ -22,6 +22,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+@SuppressWarnings({"RedundantThrows", "StringTemplateMigration", "Convert2Lambda", "ExtractMethodRecommender"})
 class MajorityJudgmentDeliberatorTest {
 
     @DisplayName("Test majority judgment deliberation from JSON assertions")
@@ -512,17 +513,17 @@ class MajorityJudgmentDeliberatorTest {
         ResultInterface result = mj.deliberate(tally);
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(
-                "profile"
-                        + delimiter
-                        + "rank"
-                        + delimiter
-                        + "median"
-                        + delimiter
-                        + "merit"
-                        + delimiter
-                        + "affine_merit"
-        );
+        stringBuilder.append("profile");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("rank");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("rank");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("median");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("merit");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("affine_merit");
 
         for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
             stringBuilder

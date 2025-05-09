@@ -126,8 +126,8 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals(1, result.getProposalResults()[1].getRank());
         assertEquals("670593969998983161296550287442546", result.getProposalResults()[0].getMerit().toString());
         assertEquals("670593970055723546867335687341546", result.getProposalResults()[1].getMerit().toString());
-        assertEquals(49.999999998, result.getProposalResults()[0].getMeritAsPercentage());
-        assertEquals(50.000000002, result.getProposalResults()[1].getMeritAsPercentage());
+        assertEquals(0.499999999978847, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.500000000021153, result.getProposalResults()[1].getRelativeMerit());
     }
 
     @Test
@@ -171,10 +171,17 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals("0", result.getProposalResults()[1].getMerit().toString());
         assertEquals("352947000000000000000000000000000000000000000000000000000000", result.getProposalResults()[2].getMerit().toString());
         assertEquals("705894000000000000000000000000000000000000000000000000000000", result.getProposalResults()[3].getMerit().toString());
-        assertEquals(22.222222223, result.getProposalResults()[0].getMeritAsPercentage());
-        assertEquals(0.0, result.getProposalResults()[1].getMeritAsPercentage());
-        assertEquals(25.925925926, result.getProposalResults()[2].getMeritAsPercentage());
-        assertEquals(51.851851852, result.getProposalResults()[3].getMeritAsPercentage());
+        assertEquals(0.222222222226337, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.0, result.getProposalResults()[1].getRelativeMerit());
+        assertEquals(0.259259259257888, result.getProposalResults()[2].getRelativeMerit());
+        assertEquals(0.518518518515775, result.getProposalResults()[3].getRelativeMerit());
+        assertEquals(1.0,
+                result.getProposalResults()[0].getRelativeMerit()
+                        + result.getProposalResults()[1].getRelativeMerit()
+                        + result.getProposalResults()[2].getRelativeMerit()
+                        + result.getProposalResults()[3].getRelativeMerit()
+        );
+
     }
 
     @Test
@@ -471,16 +478,16 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals("227896998", result.getProposalResults()[2].getMerit().toString());
         assertEquals("512739688", result.getProposalResults()[3].getMerit().toString());
 
-        assertEquals(25.292657097, result.getProposalResults()[0].getMeritAsPercentage());
-        assertEquals(24.889618984, result.getProposalResults()[1].getMeritAsPercentage());
-        assertEquals(15.329121475, result.getProposalResults()[2].getMeritAsPercentage());
-        assertEquals(34.488602444, result.getProposalResults()[3].getMeritAsPercentage());
+        assertEquals(0.252926570972335, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.248896189838083, result.getProposalResults()[1].getRelativeMerit());
+        assertEquals(0.153291214747137, result.getProposalResults()[2].getRelativeMerit());
+        assertEquals(0.344886024442445, result.getProposalResults()[3].getRelativeMerit());
 
-        assertEquals(100.0,
-                result.getProposalResults()[0].getMeritAsPercentage()
-                        + result.getProposalResults()[1].getMeritAsPercentage()
-                        + result.getProposalResults()[2].getMeritAsPercentage()
-                        + result.getProposalResults()[3].getMeritAsPercentage()
+        assertEquals(1.0,
+                result.getProposalResults()[0].getRelativeMerit()
+                        + result.getProposalResults()[1].getRelativeMerit()
+                        + result.getProposalResults()[2].getRelativeMerit()
+                        + result.getProposalResults()[3].getRelativeMerit()
         );
     }
 
@@ -493,9 +500,8 @@ class MajorityJudgmentDeliberatorTest {
 //    }
 
     void generateMeritDistribution(Integer amountOfGrades, Integer amountOfJudges) throws Throwable {
-        // This test has no assertions.
-        // It is not a test, but a handy entrypoint for data generation.
-        // This ought to be moved somewhere else.
+        // This is not a test, but a handy entrypoint for data generation.
+        // This ought to be moved somewhere else, probably.
 
         String delimiter = ",";
 
@@ -515,7 +521,7 @@ class MajorityJudgmentDeliberatorTest {
                         + delimiter
                         + "merit"
                         + delimiter
-                        + "merit_adjusted"
+                        + "affine_merit"
         );
 
         for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
@@ -531,22 +537,21 @@ class MajorityJudgmentDeliberatorTest {
                     .append(delimiter).append(" ")
                     .append(proposalResult.getMerit().toString())
                     .append(delimiter).append(" ")
-                    .append(String.format("%.16f", proposalResult.getMeritAdjusted()))
+                    .append(String.format("%.16f", proposalResult.getAffineMerit()))
             ;
         }
 
         Path FILE_PATH = Paths.get(
                 ".",
-                String.format("merit_distribution_%d_grades_%d_judges.csv", amountOfGrades,  amountOfJudges)
+                String.format("merit_distribution_%d_grades_%d_judges.csv", amountOfGrades, amountOfJudges)
         );
         try (
-                BufferedWriter writer = Files.newBufferedWriter
-                        (
-                                FILE_PATH,
-                                StandardCharsets.UTF_8,
-                                StandardOpenOption.CREATE,
-                                StandardOpenOption.TRUNCATE_EXISTING
-                        )
+                BufferedWriter writer = Files.newBufferedWriter(
+                        FILE_PATH,
+                        StandardCharsets.UTF_8,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING
+                )
         ) {
             writer.write(stringBuilder.toString());
         } catch (IOException e) {
@@ -626,7 +631,7 @@ class MajorityJudgmentDeliberatorTest {
 
     /**
      * Helps us test extreme situations (upper bounds) in normalized tallies, since we use the LCM
-     * (Least Common Multiple) to avoid floating-point arithmetic.
+     * (the Least Common Multiple) to avoid floating-point arithmetic.
      */
     protected Integer[] primes =
             new Integer[]{

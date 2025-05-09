@@ -24,6 +24,7 @@ We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ wh
 - Handles default grades (static or normalized)
 - No floating-point arithmetic
 - Room for other deliberators (central, usual)
+- Computes the merit of proposals (JM-Score and an approximation of Merit from Absolute Rank)
 
 
 ## Example Usage

@@ -1,10 +1,16 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static java.lang.Math.*;
+// Don't worry, these imports are only used for the affine merit approximation, and not used in ranking.
+import static java.lang.Math.sin;
+import static java.lang.Math.pow;
+import static java.lang.Math.PI;
+import static java.lang.Math.E;
 
 /**
  * Deliberate (rank proposals) using Majority Judgment.
@@ -82,7 +88,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         ProposalResult[] proposalResultsSorted = proposalResults.clone(); // MUST be shallow
         Arrays.sort(
                 proposalResultsSorted,
-                (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore()));
+                (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore())
+        );
 
         // III. Attribute a rank to each Proposal and compute their relative merit
         int rank = 1;
@@ -100,17 +107,17 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             rank += 1;
 
             // Adjust (make affine) the merit
-            proposalResult.setMeritAdjusted(adjustMerit(
+            proposalResult.setAffineMerit(adjustMeritToAffine(
                     proposalResult.getMerit(), maxMerit, amountOfJudges
             ));
-            sumOfAdjustedMerits += proposalResult.getMeritAdjusted();
+            sumOfAdjustedMerits += proposalResult.getAffineMerit();
         }
 
         // Compute the relative merits
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
-            proposalResult.computeMeritAsPercentage(sumOfMerits);
-            proposalResult.computeMeritAdjustedAsPercentage(sumOfAdjustedMerits);
+            proposalResult.computeRelativeMerit(sumOfMerits);
+            proposalResult.computeRelativeAffineMerit(sumOfAdjustedMerits);
         }
 
         result.setProposalResults(proposalResults);
@@ -160,14 +167,22 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     /**
      * @see this#computeScore(ProposalTallyInterface, BigInteger, Boolean, Boolean) below
      */
-    private String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
-        return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
+    private String computeScore(
+            ProposalTallyInterface tally,
+            BigInteger amountOfJudges
+    ) {
+        return computeScore(
+                tally,
+                amountOfJudges,
+                this.favorContestation,
+                this.numerizeScore
+        );
     }
 
     /**
      * A higher score means a better rank. Assumes that grades' tallies are provided from "worst"
      * grade to "best" grade.  This score is fast to compute but is not meaningful.
-     * For a meaningful scalar value, see computeMerit.
+     * For a meaningful scalar value, see this#computeMerit().
      *
      * @param tally             Holds the tallies of each Grade for a single Proposal
      * @param amountOfJudges    Amount of judges participating
@@ -272,23 +287,16 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return merit;
     }
 
-    private Double adjustMerit(BigInteger merit, BigInteger maxMerit, BigInteger amountOfJudges) {
-        // We're "cheating" here, at the expense of numerical stability
-        // We could use a recursive Euclidean div ?
-        long precision = 1_000_000_000;
-        double meritNormalized = round(merit.multiply(
-                BigInteger.valueOf(precision * 10)
-        ).divide(maxMerit).doubleValue() / 10.0) / (double) precision;
+    private Double adjustMeritToAffine(
+            BigInteger merit,
+            BigInteger maxMerit,
+            BigInteger amountOfJudges
+    ) {
+        double meritNormalized = (new BigDecimal(merit).divide(
+                new BigDecimal(maxMerit), 15, RoundingMode.HALF_EVEN
+        )).doubleValue();
 
         double rankNormalized = meritToRankModel(meritNormalized, amountOfJudges.intValue());
-
-//        BigInteger adjustedMerit = BigInteger.ZERO.add(merit);  // copy
-//        adjustedMerit = BigInteger.valueOf(round(
-//                (1.0 - rankNormalized) * (double) precision
-//        )).multiply(maxMerit).divide(
-//                BigInteger.valueOf(precision)
-//        );
-//        return adjustedMerit;
 
         return (1.0 - rankNormalized);
     }

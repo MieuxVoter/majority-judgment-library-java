@@ -1,6 +1,8 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 import static java.lang.Math.round;
 
@@ -14,11 +16,11 @@ public class ProposalResult implements ProposalResultInterface {
 
     protected BigInteger merit = BigInteger.ZERO;
 
-    protected Double meritAsPercentage = 0.0;
+    protected Double relativeMerit = 0.0;
 
-    protected Double meritAdjusted = 0.0;
+    protected Double affineMerit = 0.0;
 
-    protected Double meritAdjustedAsPercentage = 0.0;
+    protected Double relativeAffineMerit = 0.0;
 
     protected ProposalTallyAnalysis analysis;
 
@@ -54,48 +56,38 @@ public class ProposalResult implements ProposalResultInterface {
         this.merit = merit;
     }
 
-    public Double getMeritAsPercentage() {
-        return meritAsPercentage;
+    public Double getRelativeMerit() {
+        return relativeMerit;
     }
 
-    public Double getMeritAdjusted() {
-        return meritAdjusted;
+    public Double getAffineMerit() {
+        return affineMerit;
     }
 
-    public ProposalResult setMeritAdjusted(Double meritAdjusted) {
-        this.meritAdjusted = meritAdjusted;
-        return this;
+    public void setAffineMerit(Double affineMerit) {
+        this.affineMerit = affineMerit;
     }
 
-    public Double getMeritAdjustedAsPercentage() {
-        return meritAdjustedAsPercentage;
+    public Double getRelativeAffineMerit() {
+        return relativeAffineMerit;
     }
 
-    public void computeMeritAsPercentage(BigInteger sumOfMerits) {
+    public void computeRelativeMerit(BigInteger sumOfMerits) {
         if (sumOfMerits.compareTo(BigInteger.ZERO) == 0) {
-            this.meritAsPercentage = 0.0;
-            this.meritAdjustedAsPercentage = 0.0;
+            this.relativeMerit = 0.0;
             return;
         }
 
-        this.meritAsPercentage = divideAsPercentage(getMerit(), sumOfMerits);
+        this.relativeMerit = divide(getMerit(), sumOfMerits);
     }
 
-    public void computeMeritAdjustedAsPercentage(Double sumOfAdjustedMerits) {
+    public void computeRelativeAffineMerit(Double sumOfAdjustedMerits) {
         if (sumOfAdjustedMerits == 0) {
-            this.meritAdjustedAsPercentage = 0.0;
+            this.relativeAffineMerit = 0.0;
             return;
         }
 
-        this.meritAdjustedAsPercentage = 100.0 * getMeritAdjusted() / sumOfAdjustedMerits;
-    }
-
-    // This is a HACK ; improve it !
-    private Double divideAsPercentage(BigInteger numerator, BigInteger denominator) {
-        long precision = 1_000_000_000; // big enough for 7 billion humans
-        return round(numerator.multiply(
-                BigInteger.valueOf(100 * precision * 10)
-        ).divide(denominator).doubleValue() / 10.0) / (double) precision;
+        this.relativeAffineMerit = getAffineMerit() / sumOfAdjustedMerits;
     }
 
     public ProposalTallyAnalysis getAnalysis() {
@@ -104,5 +96,15 @@ public class ProposalResult implements ProposalResultInterface {
 
     public void setAnalysis(ProposalTallyAnalysis analysis) {
         this.analysis = analysis;
+    }
+
+    /**
+     * This method assumes that the result will fit in a Double.
+     * As we use it, the denominator should always be bigger than the numerator, so it's OK.
+     */
+    private Double divide(BigInteger numerator, BigInteger denominator) {
+        return (new BigDecimal(numerator).divide(
+                new BigDecimal(denominator), 15, RoundingMode.HALF_EVEN
+        )).doubleValue();
     }
 }

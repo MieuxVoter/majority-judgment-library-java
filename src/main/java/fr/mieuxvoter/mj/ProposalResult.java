@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-import static java.lang.Math.round;
 
 public class ProposalResult implements ProposalResultInterface {
 

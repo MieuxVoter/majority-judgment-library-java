@@ -50,19 +50,6 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         BigInteger amountOfJudges = tally.getAmountOfJudges();
         Integer amountOfProposals = tally.getAmountOfProposals();
 
-        BigInteger sumOfMerits = BigInteger.ZERO;
-        Double sumOfAdjustedMerits = 0.0;
-
-        // O. Compute the (maximum!) merit a 100% EXCELLENT proposal would get.
-        BigInteger maxMerit = BigInteger.ONE;
-        if (tallies.length > 0) {
-            int amountOfGrades = tallies[0].getTally().length;
-            BigInteger[] bestTally = new BigInteger[amountOfGrades];
-            Arrays.fill(bestTally, BigInteger.ZERO);
-            bestTally[bestTally.length - 1] = amountOfJudges;
-            maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
-        }
-
         Result result = new Result();
         ProposalResult[] proposalResults = new ProposalResult[amountOfProposals];
 
@@ -70,17 +57,16 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
             String score = computeScore(proposalTally, amountOfJudges);
-            BigInteger merit = computeMerit(proposalTally, amountOfJudges, this.favorContestation);
-            sumOfMerits = sumOfMerits.add(merit);
             ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(
                     proposalTally, this.favorContestation
             );
+
             ProposalResult proposalResult = new ProposalResult();
             proposalResult.setIndex(proposalIndex);
             proposalResult.setScore(score);
-            proposalResult.setMerit(merit);
             proposalResult.setAnalysis(analysis);
             // proposalResult.setRank(???); // rank is computed below, AFTER the score pass
+
             proposalResults[proposalIndex] = proposalResult;
         }
 
@@ -91,11 +77,10 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
                 (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore())
         );
 
-        // III. Attribute a rank to each Proposal and compute their relative merit
+        // III. Attribute a rank to each Proposal
         int rank = 1;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
-            // Attribute the rank
             Integer actualRank = rank;
             if (proposalIndex > 0) {
                 ProposalResult proposalResultBefore = proposalResultsSorted[proposalIndex - 1];
@@ -105,21 +90,50 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             }
             proposalResult.setRank(actualRank);
             rank += 1;
-
-            // Adjust (make affine) the merit
-            proposalResult.setAffineMerit(adjustMeritToAffine(
-                    proposalResult.getMerit(), maxMerit, amountOfJudges
-            ));
-            sumOfAdjustedMerits += proposalResult.getAffineMerit();
         }
 
-        // Compute the relative merits
+        // Steps IV, V and VI are not required to rank the proposals, but they're nice to have around.
+
+        // IV. Compute the scalar "merit from JM-Score" of each Proposal
+        BigInteger sumOfMerits = BigInteger.ZERO;
+        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+            ProposalTallyInterface proposalTally = tallies[proposalIndex];
+            ProposalResult proposalResult = proposalResults[proposalIndex];
+
+            BigInteger merit = computeMerit(proposalTally, amountOfJudges, this.favorContestation);
+
+            proposalResult.setMerit(merit);
+            sumOfMerits = sumOfMerits.add(merit);
+        }
+
+        // V.a Compute the (maximum!) merit a 100% EXCELLENT proposal would get
+        BigInteger maxMerit = BigInteger.ONE;
+        if (tallies.length > 0) {
+            int amountOfGrades = tallies[0].getTally().length;
+            BigInteger[] bestTally = new BigInteger[amountOfGrades];
+            Arrays.fill(bestTally, BigInteger.ZERO);
+            bestTally[bestTally.length - 1] = amountOfJudges;
+            maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
+        }
+        // V.b Approximate the scalar "merit from absolute rank" of each Proposal (Affine Merit)
+        double sumOfAffineMerits = 0.0;
+        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+            ProposalResult proposalResult = proposalResults[proposalIndex];
+
+            Double affineMerit = adjustMeritToAffine(proposalResult.getMerit(), maxMerit, amountOfJudges);
+
+            proposalResult.setAffineMerit(affineMerit);
+            sumOfAffineMerits += affineMerit;
+        }
+
+        // VI. Compute the relative merit(s) of each Proposal
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
             proposalResult.computeRelativeMerit(sumOfMerits);
-            proposalResult.computeRelativeAffineMerit(sumOfAdjustedMerits);
+            proposalResult.computeRelativeAffineMerit(sumOfAffineMerits);
         }
 
+        // VII. All done, let's output
         result.setProposalResults(proposalResults);
         result.setProposalResultsRanked(proposalResultsSorted);
 

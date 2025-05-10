@@ -495,8 +495,10 @@ class MajorityJudgmentDeliberatorTest {
 //    @Test
 //    @DisplayName("Generate merit distribution CSV for study")
 //    void testMeritDistribution() throws Throwable {
-//        for (int i = 23; i < 24; i++) {
-//            generateMeritDistribution(7, i);
+//        for (int g = 2; g < 7; g++) {
+//            for (int i = 1; i < 30; i++) {
+//                generateMeritDistribution(g, i);
+//            }
 //        }
 //    }
 
@@ -514,8 +516,6 @@ class MajorityJudgmentDeliberatorTest {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("profile");
-        stringBuilder.append(delimiter);
-        stringBuilder.append("rank");
         stringBuilder.append(delimiter);
         stringBuilder.append("rank");
         stringBuilder.append(delimiter);

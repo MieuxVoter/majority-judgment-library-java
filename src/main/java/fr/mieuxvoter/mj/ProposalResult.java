@@ -80,13 +80,13 @@ public class ProposalResult implements ProposalResultInterface {
         this.relativeMerit = divide(getMerit(), sumOfMerits);
     }
 
-    public void computeRelativeAffineMerit(Double sumOfAdjustedMerits) {
-        if (sumOfAdjustedMerits == 0) {
+    public void computeRelativeAffineMerit(Double sumOfAffineMerits) {
+        if (sumOfAffineMerits == 0) {
             this.relativeAffineMerit = 0.0;
             return;
         }
 
-        this.relativeAffineMerit = getAffineMerit() / sumOfAdjustedMerits;
+        this.relativeAffineMerit = getAffineMerit() / sumOfAffineMerits;
     }
 
     public ProposalTallyAnalysis getAnalysis() {

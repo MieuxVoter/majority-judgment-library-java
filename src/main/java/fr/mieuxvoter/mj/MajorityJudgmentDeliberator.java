@@ -6,12 +6,6 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Comparator;
 
-// Don't worry, these imports are only used for the affine merit approximation, and not used in ranking.
-import static java.lang.Math.sin;
-import static java.lang.Math.pow;
-import static java.lang.Math.PI;
-import static java.lang.Math.E;
-
 /**
  * Deliberate (rank proposals) using Majority Judgment.
  *
@@ -94,7 +88,7 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
 
         // Steps IV, V and VI are not required to rank the proposals, but they're nice to have around.
 
-        // IV. Compute the scalar "merit from JM-Score" of each Proposal
+        // IV. Compute the scalar "merit from MJ-Score" of each Proposal
         BigInteger sumOfMerits = BigInteger.ZERO;
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
@@ -115,15 +109,24 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             bestTally[bestTally.length - 1] = amountOfJudges;
             maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
         }
+
         // V.b Approximate the scalar "merit from absolute rank" of each Proposal (Affine Merit)
         double sumOfAffineMerits = 0.0;
-        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
-            ProposalResult proposalResult = proposalResults[proposalIndex];
+        if (tallies.length > 0) {
+            for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+                ProposalResult proposalResult = proposalResults[proposalIndex];
+                int amountOfGrades = tallies[0].getTally().length;
 
-            Double affineMerit = adjustMeritToAffine(proposalResult.getMerit(), maxMerit, amountOfJudges);
+                Double affineMerit = adjustMeritToAffine(
+                        proposalResult.getMerit(),
+                        maxMerit,
+                        amountOfJudges,
+                        amountOfGrades
+                );
 
-            proposalResult.setAffineMerit(affineMerit);
-            sumOfAffineMerits += affineMerit;
+                proposalResult.setAffineMerit(affineMerit);
+                sumOfAffineMerits += affineMerit;
+            }
         }
 
         // VI. Compute the relative merit(s) of each Proposal
@@ -255,6 +258,14 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return score.toString();
     }
 
+    /**
+     * This method is not used in ranking, but helps compute a scalar merit for a given merit profile.
+     * Such a scalar merit is handy for deriving a proportional representation for example.
+     * This merit is isomorphic with MJ ranking and could be used for ranking. (bigger is better)
+     * Marc Paraire calls this merit the "MJ-Score".
+     * As you can see, this algorithm is quite similar to the string score one.
+     * The main difference is that it's a little slower to compute, but the output value is more meaningful.
+     */
     private BigInteger computeMerit(
             ProposalTallyInterface tally,
             BigInteger amountOfJudges,
@@ -301,92 +312,6 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return merit;
     }
 
-    private Double adjustMeritToAffine(
-            BigInteger merit,
-            BigInteger maxMerit,
-            BigInteger amountOfJudges
-    ) {
-        double meritNormalized = (new BigDecimal(merit).divide(
-                new BigDecimal(maxMerit), 15, RoundingMode.HALF_EVEN
-        )).doubleValue();
-
-        double rankNormalized = meritToRankModel(meritNormalized, amountOfJudges.intValue());
-
-        return (1.0 - rankNormalized);
-    }
-
-    private double meritToRankModel(double merit, Integer amountOfJudges) {
-        int amountOfGrades = 7; // FIXME
-
-        class SigmoidAmplitudeModel {
-            final Double coefficient;
-            final Double offset;
-            final Double origin;
-            final Double sin_amplitude;
-            final Double sin_origin;
-            final Double sin_phase;
-
-            public SigmoidAmplitudeModel(
-                    Double coefficient,
-                    Double offset,
-                    Double origin,
-                    Double sin_amplitude,
-                    Double sin_origin,
-                    Double sin_phase
-            ) {
-                this.coefficient = coefficient;
-                this.offset = offset;
-                this.origin = origin;
-                this.sin_amplitude = sin_amplitude;
-                this.sin_origin = sin_origin;
-                this.sin_phase = sin_phase;
-            }
-
-            public Double computeAmplitude(Integer amountOfJudges) {
-                return
-                        this.offset + (this.coefficient / (amountOfJudges - this.origin))
-                        +
-                        this.sin_amplitude * sin(amountOfJudges * PI + this.sin_phase) / (amountOfJudges - this.sin_origin);
-            }
-        }
-
-        // Values derived from rough model fitting ; they can be improved
-        SigmoidAmplitudeModel[] sam = new SigmoidAmplitudeModel[]{
-                new SigmoidAmplitudeModel(0.5151336373041772, 0.0304017096437998, -0.1560819745436698, -0.0642768687910415, 3.7019618565115722, -0.2267673450950530),
-                new SigmoidAmplitudeModel(0.8321495032592745, 0.1538010001096599, -10.1403742732170450, 0.1452337649130754, 2.9093303593527824, 0.1670760936959231),
-                new SigmoidAmplitudeModel(-0.5832534017217945, 0.3128738036537556, -2.4481699553712186, 1.7698591489043021, 0.0064898411429031, -3.1491904326892173),
-                new SigmoidAmplitudeModel(-0.9135479603269890, 0.3121169039235479, -4.0419384013683608, -0.0398619334678863, 2.2608983418537969, -3.5661704309341040),
-                new SigmoidAmplitudeModel(-0.0358891062680384, 0.1592742142625385, 0.8473094470570051, -0.1720450496934443, 0.8776512589952787, 0.1900715592340584),
-                new SigmoidAmplitudeModel(0.2965479931458628, 0.0309932939590777, -2.7064785369970221, -0.0616634512919992, 3.3069369590264279, -3.3295936102008192),
-        };
-
-        Double sumOfAmplitudes = 0.0;
-        Double[] amplitudes = new Double[amountOfGrades];
-        for (int i = 0; i < amountOfGrades - 1; i++) {
-            amplitudes[i] = sam[i].computeAmplitude(amountOfJudges);
-            sumOfAmplitudes += amplitudes[i];
-        }
-        for (int i = 0; i < amountOfGrades - 1; i++) {
-            amplitudes[i] = amplitudes[i] / sumOfAmplitudes;
-        }
-
-        double tightness = 96.0; // derived from fitting
-        double rank = 0.0;  // from 0.0 (exclusive) to 1.0 (inclusive) ; is 'double' enough precision?
-        for (int i = 0; i < amountOfGrades - 1; i++) {
-            rank += amplitudes[i] * sigmoid(
-                    merit,
-                    tightness,
-                    (2.0 * i + 1.0) / (2.0 * (amountOfGrades - 1))
-            );
-        }
-
-        return rank;
-    }
-
-    private double sigmoid(double x, double tightness, double origin) {
-        return 1.0 / (1.0 + pow(E, tightness * (x - origin)));
-    }
-
     private int countDigits(int number) {
         //noinspection StringTemplateMigration
         return ("" + number).length();
@@ -395,5 +320,31 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     private int countDigits(BigInteger number) {
         //noinspection StringTemplateMigration
         return ("" + number).length();
+    }
+
+    /**
+     * This method is NOT used in ranking, but helps compute yet another scalar merit for a given merit profile.
+     * Such a scalar merit is handy for deriving a proportional representation for example.
+     * This method adjusts the MJ-Score to make its distribution quasi-affine over all possible merit profiles.
+     * See study/output_30_0.png
+     * You can safely pretend that this does not exist, since it is NOT used in ranking.
+     */
+    private Double adjustMeritToAffine(
+            BigInteger merit,
+            BigInteger maxMerit,
+            BigInteger amountOfJudges,
+            int amountOfGrades
+    ) {
+        double meritNormalized = (new BigDecimal(merit).divide(
+                new BigDecimal(maxMerit), 15, RoundingMode.HALF_EVEN
+        )).doubleValue();
+
+        double rankNormalized = new MeritToAbsoluteRankModel().apply(
+                meritNormalized,
+                amountOfGrades,
+                amountOfJudges.intValue()
+        );
+
+        return (1.0 - rankNormalized);
     }
 }

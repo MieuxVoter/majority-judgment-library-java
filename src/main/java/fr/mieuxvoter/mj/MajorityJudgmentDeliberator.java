@@ -1,6 +1,8 @@
 package fr.mieuxvoter.mj;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -45,18 +47,20 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         Result result = new Result();
         ProposalResult[] proposalResults = new ProposalResult[amountOfProposals];
 
-        // I. Compute the scores of each Proposal
+        // I. Compute the score and merit of each Proposal
         for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
             ProposalTallyInterface proposalTally = tallies[proposalIndex];
             String score = computeScore(proposalTally, amountOfJudges);
             ProposalTallyAnalysis analysis = new ProposalTallyAnalysis(
                     proposalTally, this.favorContestation
             );
+
             ProposalResult proposalResult = new ProposalResult();
             proposalResult.setIndex(proposalIndex);
             proposalResult.setScore(score);
             proposalResult.setAnalysis(analysis);
             // proposalResult.setRank(???); // rank is computed below, AFTER the score pass
+
             proposalResults[proposalIndex] = proposalResult;
         }
 
@@ -64,7 +68,8 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         ProposalResult[] proposalResultsSorted = proposalResults.clone(); // MUST be shallow
         Arrays.sort(
                 proposalResultsSorted,
-                (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore()));
+                (Comparator<ProposalResultInterface>) (p0, p1) -> p1.getScore().compareTo(p0.getScore())
+        );
 
         // III. Attribute a rank to each Proposal
         int rank = 1;
@@ -81,6 +86,57 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             rank += 1;
         }
 
+        // Steps IV, V and VI are not required to rank the proposals, but they're nice to have around.
+
+        // IV. Compute the scalar "merit from MJ-Score" of each Proposal
+        BigInteger sumOfMerits = BigInteger.ZERO;
+        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+            ProposalTallyInterface proposalTally = tallies[proposalIndex];
+            ProposalResult proposalResult = proposalResults[proposalIndex];
+
+            BigInteger merit = computeMerit(proposalTally, amountOfJudges, this.favorContestation);
+
+            proposalResult.setMerit(merit);
+            sumOfMerits = sumOfMerits.add(merit);
+        }
+
+        // V.a Compute the (maximum!) merit a 100% EXCELLENT proposal would get
+        BigInteger maxMerit = BigInteger.ONE;
+        if (tallies.length > 0) {
+            int amountOfGrades = tallies[0].getTally().length;
+            BigInteger[] bestTally = new BigInteger[amountOfGrades];
+            Arrays.fill(bestTally, BigInteger.ZERO);
+            bestTally[bestTally.length - 1] = amountOfJudges;
+            maxMerit = computeMerit(new ProposalTally(bestTally), amountOfJudges, this.favorContestation);
+        }
+
+        // V.b Approximate the scalar "merit from absolute rank" of each Proposal (Affine Merit)
+        double sumOfAffineMerits = 0.0;
+        if (tallies.length > 0) {
+            for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+                ProposalResult proposalResult = proposalResults[proposalIndex];
+                int amountOfGrades = tallies[0].getTally().length;
+
+                Double affineMerit = adjustMeritToAffine(
+                        proposalResult.getMerit(),
+                        maxMerit,
+                        amountOfJudges,
+                        amountOfGrades
+                );
+
+                proposalResult.setAffineMerit(affineMerit);
+                sumOfAffineMerits += affineMerit;
+            }
+        }
+
+        // VI. Compute the relative merit(s) of each Proposal
+        for (int proposalIndex = 0; proposalIndex < amountOfProposals; proposalIndex++) {
+            ProposalResult proposalResult = proposalResultsSorted[proposalIndex];
+            proposalResult.computeRelativeMerit(sumOfMerits);
+            proposalResult.computeRelativeAffineMerit(sumOfAffineMerits);
+        }
+
+        // VII. All done, let's output
         result.setProposalResults(proposalResults);
         result.setProposalResultsRanked(proposalResultsSorted);
 
@@ -126,15 +182,24 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
     }
 
     /**
-     * @see computeScore() below
+     * @see this#computeScore(ProposalTallyInterface, BigInteger, Boolean, Boolean) below
      */
-    private String computeScore(ProposalTallyInterface tally, BigInteger amountOfJudges) {
-        return computeScore(tally, amountOfJudges, this.favorContestation, this.numerizeScore);
+    private String computeScore(
+            ProposalTallyInterface tally,
+            BigInteger amountOfJudges
+    ) {
+        return computeScore(
+                tally,
+                amountOfJudges,
+                this.favorContestation,
+                this.numerizeScore
+        );
     }
 
     /**
      * A higher score means a better rank. Assumes that grades' tallies are provided from "worst"
-     * grade to "best" grade.
+     * grade to "best" grade.  This score is fast to compute but is not meaningful.
+     * For a meaningful scalar value, see this#computeMerit().
      *
      * @param tally             Holds the tallies of each Grade for a single Proposal
      * @param amountOfJudges    Amount of judges participating
@@ -193,11 +258,93 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
         return score.toString();
     }
 
+    /**
+     * This method is not used in ranking, but helps compute a scalar merit for a given merit profile.
+     * Such a scalar merit is handy for deriving a proportional representation for example.
+     * This merit is isomorphic with MJ ranking and could be used for ranking. (bigger is better)
+     * Marc Paraire calls this merit the "MJ-Score".
+     * As you can see, this algorithm is quite similar to the string score one.
+     * The main difference is that it's a little slower to compute, but the output value is more meaningful.
+     */
+    private BigInteger computeMerit(
+            ProposalTallyInterface tally,
+            BigInteger amountOfJudges,
+            Boolean favorContestation
+    ) {
+        ProposalTallyAnalysis analysis = new ProposalTallyAnalysis();
+        analysis.reanalyze(tally, favorContestation);
+
+        int amountOfGrades = tally.getTally().length;
+
+        ProposalTallyInterface currentTally = tally.duplicate();
+
+        BigInteger merit = BigInteger.valueOf(analysis.getMedianGrade());
+        Integer cursorGrade = analysis.getMedianGrade();
+        Integer minProcessedGrade = cursorGrade;
+        Integer maxProcessedGrade = cursorGrade;
+
+        for (int i = 0; i < amountOfGrades - 1; i++) {
+
+            merit = merit.multiply(amountOfJudges);
+
+            if (analysis.getSecondMedianGroupSize().compareTo(BigInteger.ZERO) == 0) {
+                continue;
+            }
+
+            if (analysis.getSecondMedianGroupSign() > 0) {
+                cursorGrade = maxProcessedGrade + 1;
+                maxProcessedGrade = cursorGrade;
+            } else {
+                cursorGrade = minProcessedGrade - 1;
+                minProcessedGrade = cursorGrade;
+            }
+
+            merit = merit.add(
+                    analysis.getSecondMedianGroupSize().multiply(
+                            BigInteger.valueOf(analysis.getSecondMedianGroupSign())
+                    )
+            );
+
+            currentTally.moveJudgments(analysis.getMedianGrade(), cursorGrade);
+            analysis.reanalyze(currentTally, favorContestation);
+        }
+
+        return merit;
+    }
+
     private int countDigits(int number) {
+        //noinspection StringTemplateMigration
         return ("" + number).length();
     }
 
     private int countDigits(BigInteger number) {
+        //noinspection StringTemplateMigration
         return ("" + number).length();
+    }
+
+    /**
+     * This method is NOT used in ranking, but helps compute yet another scalar merit for a given merit profile.
+     * Such a scalar merit is handy for deriving a proportional representation for example.
+     * This method adjusts the MJ-Score to make its distribution quasi-affine over all possible merit profiles.
+     * See study/output_30_0.png
+     * You can safely pretend that this does not exist, since it is NOT used in ranking.
+     */
+    private Double adjustMeritToAffine(
+            BigInteger merit,
+            BigInteger maxMerit,
+            BigInteger amountOfJudges,
+            int amountOfGrades
+    ) {
+        double meritNormalized = (new BigDecimal(merit).divide(
+                new BigDecimal(maxMerit), 15, RoundingMode.HALF_EVEN
+        )).doubleValue();
+
+        double rankNormalized = new MeritToAbsoluteRankModel().apply(
+                meritNormalized,
+                amountOfGrades,
+                amountOfJudges.intValue()
+        );
+
+        return (1.0 - rankNormalized);
     }
 }

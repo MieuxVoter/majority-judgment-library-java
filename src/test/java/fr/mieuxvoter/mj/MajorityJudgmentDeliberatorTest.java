@@ -1,20 +1,28 @@
 package fr.mieuxvoter.mj;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import net.joshka.junit.json.params.JsonFileSource;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 
-import java.math.BigInteger;
-
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+
+@SuppressWarnings({"RedundantThrows", "StringTemplateMigration", "Convert2Lambda", "ExtractMethodRecommender"})
 class MajorityJudgmentDeliberatorTest {
 
     @DisplayName("Test majority judgment deliberation from JSON assertions")
@@ -100,14 +108,14 @@ class MajorityJudgmentDeliberatorTest {
                         new ProposalTallyInterface[]{
                                 new ProposalTally(
                                         new Long[]{
-                                                11312415004L, 21153652410L,
-                                                24101523299L, 18758623562L
+                                                11_312_415_004L, 21_153_652_410L,
+                                                24_101_523_299L, 18_758_623_562L
                                         }
                                 ),
                                 new ProposalTally(
                                         new Long[]{
-                                                11312415004L, 21153652400L,
-                                                24101523299L, 18758623572L
+                                                11_312_415_004L, 21_153_652_400L,
+                                                24_101_523_299L, 18_758_623_572L
                                         }
                                 ),
                         });
@@ -117,6 +125,64 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals(2, result.getProposalResults().length);
         assertEquals(2, result.getProposalResults()[0].getRank());
         assertEquals(1, result.getProposalResults()[1].getRank());
+        assertEquals("670593969998983161296550287442546", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("670593970055723546867335687341546", result.getProposalResults()[1].getMerit().toString());
+        assertEquals(0.499999999978847, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.500000000021153, result.getProposalResults()[1].getRelativeMerit());
+    }
+
+    @Test
+    @DisplayName("Test 7 billions humans")
+    void testSevenBillionHumans() throws Throwable {
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally =
+                new Tally(
+                        new ProposalTallyInterface[]{
+                                new ProposalTally(
+                                        new Long[]{
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L, 1_000_000_000L,
+                                                1_000_000_000L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                7_000_000_000L,
+                                                0L, 0L, 0L, 0L, 0L, 0L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                0L, 0L, 0L,
+                                                7_000_000_000L,
+                                                0L, 0L, 0L,
+                                        }
+                                ),
+                                new ProposalTally(
+                                        new Long[]{
+                                                0L, 0L, 0L, 0L, 0L, 0L,
+                                                7_000_000_000L
+                                        }
+                                ),
+                        });
+        ResultInterface result = mj.deliberate(tally);
+
+        assertEquals("302526000007202999999314000000097999999993000000001000000000", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("0", result.getProposalResults()[1].getMerit().toString());
+        assertEquals("352947000000000000000000000000000000000000000000000000000000", result.getProposalResults()[2].getMerit().toString());
+        assertEquals("705894000000000000000000000000000000000000000000000000000000", result.getProposalResults()[3].getMerit().toString());
+        assertEquals(0.222222222226337, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.0, result.getProposalResults()[1].getRelativeMerit());
+        assertEquals(0.259259259257888, result.getProposalResults()[2].getRelativeMerit());
+        assertEquals(0.518518518515775, result.getProposalResults()[3].getRelativeMerit());
+        assertEquals(1.0,
+                result.getProposalResults()[0].getRelativeMerit()
+                        + result.getProposalResults()[1].getRelativeMerit()
+                        + result.getProposalResults()[2].getRelativeMerit()
+                        + result.getProposalResults()[3].getRelativeMerit()
+        );
+
     }
 
     @Test
@@ -387,6 +453,114 @@ class MajorityJudgmentDeliberatorTest {
         assertEquals("104203003", result.getProposalResults()[1].getScore());
     }
 
+
+    @Test
+    @DisplayName("Test numeric merit")
+    void testNumericMerit() throws Throwable {
+        Integer amountOfJudges = 23;
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally = (
+                new Tally(
+                        new ProposalTallyInterface[]{
+                                new ProposalTally(new Integer[]{5, 2, 4, 2, 4, 1, 5}),
+                                new ProposalTally(new Integer[]{3, 2, 7, 0, 4, 5, 2}),
+                                new ProposalTally(new Integer[]{6, 5, 3, 0, 5, 1, 3}),
+                                new ProposalTally(new Integer[]{2, 2, 4, 4, 5, 2, 4}),
+                        },
+                        amountOfJudges
+                )
+        );
+
+        ResultInterface result = mj.deliberate(tally);
+
+        assertNotNull(result);
+        assertEquals("376024199", result.getProposalResults()[0].getMerit().toString());
+        assertEquals("370032259", result.getProposalResults()[1].getMerit().toString());
+        assertEquals("227896998", result.getProposalResults()[2].getMerit().toString());
+        assertEquals("512739688", result.getProposalResults()[3].getMerit().toString());
+
+        assertEquals(0.252926570972335, result.getProposalResults()[0].getRelativeMerit());
+        assertEquals(0.248896189838083, result.getProposalResults()[1].getRelativeMerit());
+        assertEquals(0.153291214747137, result.getProposalResults()[2].getRelativeMerit());
+        assertEquals(0.344886024442445, result.getProposalResults()[3].getRelativeMerit());
+
+        assertEquals(1.0,
+                result.getProposalResults()[0].getRelativeMerit()
+                        + result.getProposalResults()[1].getRelativeMerit()
+                        + result.getProposalResults()[2].getRelativeMerit()
+                        + result.getProposalResults()[3].getRelativeMerit()
+        );
+    }
+
+//    @Test
+//    @DisplayName("Generate merit distribution CSV for study")
+//    void testMeritDistribution() throws Throwable {
+//        for (int g = 2; g < 7; g++) {
+//            for (int i = 1; i < 30; i++) {
+//                generateMeritDistribution(g, i);
+//            }
+//        }
+//    }
+
+    void generateMeritDistribution(Integer amountOfGrades, Integer amountOfJudges) throws Throwable {
+        // This is not a test, but a handy entrypoint for data generation.
+        // This ought to be moved somewhere else, probably.
+
+        String delimiter = ",";
+
+        ProposalTallyFactory factory = new ProposalTallyFactory(amountOfGrades, amountOfJudges);
+        TallyInterface tally = new Tally(factory.generateAll());
+
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        ResultInterface result = mj.deliberate(tally);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("profile");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("rank");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("median");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("merit");
+        stringBuilder.append(delimiter);
+        stringBuilder.append("affine_merit");
+
+        for (ProposalResultInterface proposalResult : result.getProposalResultsRanked()) {
+            stringBuilder
+                    .append("\n")
+                    .append("\"")
+                    .append(Arrays.toString(proposalResult.getAnalysis().tally.getTally()))
+                    .append("\"")
+                    .append(delimiter).append(" ")
+                    .append(proposalResult.getRank())
+                    .append(delimiter).append(" ")
+                    .append(proposalResult.getAnalysis().getMedianGrade())
+                    .append(delimiter).append(" ")
+                    .append(proposalResult.getMerit().toString())
+                    .append(delimiter).append(" ")
+                    .append(String.format("%.16f", proposalResult.getAffineMerit()))
+            ;
+        }
+
+        Path FILE_PATH = Paths.get(
+                ".",
+                String.format("merit_distribution_%d_grades_%d_judges.csv", amountOfGrades, amountOfJudges)
+        );
+        try (
+                BufferedWriter writer = Files.newBufferedWriter(
+                        FILE_PATH,
+                        StandardCharsets.UTF_8,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING
+                )
+        ) {
+            writer.write(stringBuilder.toString());
+        } catch (IOException e) {
+            System.err.println("Cannot write merit distribution to CSV file");
+            e.printStackTrace();
+        }
+    }
+
     @Test
     @DisplayName("Fail on unbalanced tallies")
     void testFailureOnUnbalancedTallies() {
@@ -458,7 +632,7 @@ class MajorityJudgmentDeliberatorTest {
 
     /**
      * Helps us test extreme situations (upper bounds) in normalized tallies, since we use the LCM
-     * (Least Common Multiple) to avoid floating-point arithmetic.
+     * (the Least Common Multiple) to avoid floating-point arithmetic.
      */
     protected Integer[] primes =
             new Integer[]{

@@ -23,7 +23,8 @@ We therefore use a _score-based algorithm_ and _no floating-point arithmetic_ wh
 - Supports thousands of proposals
 - Handles default grades (static or normalized)
 - No floating-point arithmetic
-- Room for other deliberators (central, usual)
+- Room for other deliberation resolvers (central, usual)
+- Computes the merit of proposals (JM-Score and an approximation of Merit from Absolute Rank)
 
 
 ## Example Usage
@@ -99,7 +100,7 @@ TallyInterface tally = new NormalizedTally(new ProposalTallyInterface[] {
 
 ### Collect a Tally from judgments
 
-It's usually best to use structured queries (eg: in SQL) directly in your database to collect the tallies, since it scales better with high amounts of participants, but if you must you can collect the tally directly from individual judgments, with a `CollectedTally`.
+It's usually best to use structured queries (eg: in SQL) directly in your database to collect the tallies, since it scales better with high amounts of participants, but if you must, you can collect the tally directly from individual judgments, with a `CollectedTally`.
 
 ```java
 Integer amountOfProposals = 2;

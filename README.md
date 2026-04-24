@@ -142,7 +142,7 @@ ResultInterface result = mj.deliberate(tally);
 
 Install [maven](https://maven.apache.org), and run:
 
-    mvn test
+    mvn test -DtrimStackTrace=false
 
 > Maven is available as a debian package: `apt install maven`
 

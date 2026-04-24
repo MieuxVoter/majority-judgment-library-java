@@ -628,6 +628,22 @@ class MajorityJudgmentDeliberatorTest {
         assertTrue(caught, "An exception is raised");
     }
 
+    @Test
+    @DisplayName("Allow no ballots")
+    void testNoBallots() {
+        Integer amountOfJudges = 0;
+        DeliberatorInterface mj = new MajorityJudgmentDeliberator();
+        TallyInterface tally =
+                new Tally(
+                        new ProposalTallyInterface[]{
+                                new ProposalTally(new Integer[]{0, 0, 0}),
+                                new ProposalTally(new Integer[]{0, 0, 0}),
+                        },
+                        amountOfJudges
+                );
+        mj.deliberate(tally);
+    }
+
     // …
 
     /**

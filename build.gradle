@@ -10,9 +10,11 @@ apply plugin: 'java-library'
 
 // In this section we declare where to find the dependencies of our project
 repositories {
-    // Use jcenter for resolving our dependencies.
     // We can declare any Maven/Ivy/file repository here.
+
+    // Use jcenter for resolving our dependencies.
     //jcenter()
+
     mavenCentral()
 }
 

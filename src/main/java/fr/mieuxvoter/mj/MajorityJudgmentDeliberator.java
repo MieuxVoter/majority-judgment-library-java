@@ -335,6 +335,10 @@ public final class MajorityJudgmentDeliberator implements DeliberatorInterface {
             BigInteger amountOfJudges,
             int amountOfGrades
     ) {
+        if (maxMerit.compareTo(BigInteger.ZERO) == 0) {
+            return 0.0;
+        }
+
         double meritNormalized = (new BigDecimal(merit).divide(
                 new BigDecimal(maxMerit), 15, RoundingMode.HALF_EVEN
         )).doubleValue();

@@ -42,7 +42,6 @@ public interface ProposalResultInterface {
     Double getRelativeMerit();
 
     /**
-     * @deprecated
      * This method is very experimental and might be subject to changes.
      * Furthermore, right now it only works for 7 grades.
      * Best not use this 'til it's stable.
@@ -55,7 +54,6 @@ public interface ProposalResultInterface {
     Double getAffineMerit();
 
     /**
-     * @deprecated
      * This method is very experimental and might be subject to changes.
      */
     Double getRelativeAffineMerit();

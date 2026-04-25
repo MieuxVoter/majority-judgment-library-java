@@ -51,8 +51,7 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MieuxVoter_majority-judgment-library-java
-
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MieuxVoter_majority-judgment-library-java -Dsonar.host.url=http://localhost:9000
       - name: Upload code coverage
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
